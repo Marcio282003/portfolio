@@ -108,6 +108,56 @@ a.ler:hover{border-color:var(--tinta)}
   background:var(--vidro);border:1px solid var(--borda);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 
+/* ---------- pastas ---------- */
+.pastas{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.pasta{position:relative;display:block;text-decoration:none;color:inherit;
+  aspect-ratio:1.32;perspective:900px}
+.pasta .corpo{position:absolute;inset:0;transform-style:preserve-3d}
+
+/* aba de tras */
+.pasta .aba{position:absolute;left:0;top:7%;width:46%;height:16%;
+  background:linear-gradient(170deg,#b9b7b2,#a8a6a1);
+  border-radius:7px 10px 0 0;
+  box-shadow:0 -1px 0 rgba(255,255,255,.4) inset}
+.pasta .tras{position:absolute;left:0;top:18%;right:0;bottom:0;
+  background:linear-gradient(170deg,#b9b7b2,#a4a29d);border-radius:4px 9px 9px 9px}
+
+/* papeis que espiam */
+.pasta .papeis{position:absolute;left:7%;right:7%;top:21%;bottom:17%;
+  display:flex;align-items:flex-end;justify-content:center}
+.pasta .papeis i{position:absolute;left:0;right:0;top:0;bottom:0;
+  background:#fdfdfc;border-radius:3px;
+  box-shadow:0 2px 7px rgba(0,0,0,.1);
+  transition:transform .42s cubic-bezier(.2,.8,.3,1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:600;color:#8c9099;letter-spacing:-.01em;
+  text-align:center;padding:0 10px;overflow:hidden}
+.pasta .papeis i:nth-child(1){transform:translateY(-3%) rotate(-2.2deg);background:#f3f3f1}
+.pasta .papeis i:nth-child(2){transform:translateY(-1%) rotate(1.4deg);background:#f8f8f6}
+.pasta .papeis i:nth-child(3){transform:translateY(1%)}
+
+/* frente da pasta */
+.pasta .frente{position:absolute;left:0;right:0;top:30%;bottom:0;
+  background:linear-gradient(168deg,#cbc9c4,#aeaca7 62%,#a09e99);
+  border-radius:5px 5px 10px 10px;
+  box-shadow:0 -1px 0 rgba(255,255,255,.55) inset, 0 10px 26px rgba(32,34,40,.16);
+  transition:transform .42s cubic-bezier(.2,.8,.3,1)}
+.pasta .rotulo{position:absolute;left:10%;bottom:9%;z-index:4;
+  font-size:14px;font-weight:600;letter-spacing:-.01em;color:#3b3d44}
+
+/* abrir ao passar o mouse */
+.pasta:hover .papeis i:nth-child(1){transform:translateY(-34%) rotate(-7deg)}
+.pasta:hover .papeis i:nth-child(2){transform:translateY(-25%) rotate(4.5deg)}
+.pasta:hover .papeis i:nth-child(3){transform:translateY(-17%)}
+.pasta:hover .frente{transform:rotateX(-11deg);transform-origin:bottom}
+.pasta:focus-visible{outline:2px solid var(--tinta);outline-offset:6px;border-radius:10px}
+
+@media(max-width:560px){
+  .pastas{gap:16px}
+  .pasta .rotulo{font-size:13px}
+  .pasta .papeis i{font-size:11px}
+}
+
 /* ---------- contato ---------- */
 .contato a{color:var(--tinta);text-decoration:none;border-bottom:1px solid var(--linha);
   padding-bottom:2px;transition:.2s}
@@ -253,9 +303,55 @@ a.ler:hover{border-color:var(--tinta)}
   </div>
 </section>
 
+<section id="pastas">
+  <div class="col">
+    <div class="cab rev"><span class="n">5</span><h2>Em outros lugares</h2></div>
+    <p class="suave rev" style="margin-bottom:28px">Os estudos de caso completos e o resto do que eu mantenho na internet.</p>
+    <div class="pastas rev">
+
+      <a class="pasta" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-01-Render-BIM.md" target="_blank" rel="noopener">
+        <span class="corpo">
+          <span class="aba"></span><span class="tras"></span>
+          <span class="papeis"><i>Direct3D 11</i><i>147 testes</i><i>21 versões</i></span>
+          <span class="frente"></span>
+          <span class="rotulo">Render BIM</span>
+        </span>
+      </a>
+
+      <a class="pasta" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-02-Registro-de-Horas.md" target="_blank" rel="noopener">
+        <span class="corpo">
+          <span class="aba"></span><span class="tras"></span>
+          <span class="papeis"><i>PostgreSQL</i><i>bug silencioso</i><i>11 de 11</i></span>
+          <span class="frente"></span>
+          <span class="rotulo">Registro de Horas</span>
+        </span>
+      </a>
+
+      <a class="pasta" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-03-MC-Blocks.md" target="_blank" rel="noopener">
+        <span class="corpo">
+          <span class="aba"></span><span class="tras"></span>
+          <span class="papeis"><i>3 versões do Revit</i><i>13 GB</i><i>32 mil famílias</i></span>
+          <span class="frente"></span>
+          <span class="rotulo">MC-Blocks</span>
+        </span>
+      </a>
+
+      <a class="pasta" href="https://github.com/Marcio282003" target="_blank" rel="noopener">
+        <span class="corpo">
+          <span class="aba"></span><span class="tras"></span>
+          <span class="papeis"><i>repositórios</i><i>commits</i><i>@Marcio282003</i></span>
+          <span class="frente"></span>
+          <span class="rotulo">GitHub</span>
+        </span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
 <section id="contato">
   <div class="col">
-    <div class="cab rev"><span class="n">5</span><h2>Contato</h2></div>
+    <div class="cab rev"><span class="n">6</span><h2>Contato</h2></div>
     <div class="contato rev">
       <p>Aberto a oportunidades em desenvolvimento, automação e sistemas internos.</p>
       <p>
@@ -394,7 +490,7 @@ if(!parado){
 
 // ---- menu acompanha a seção ----
 var mapa = {inicio:'inicio', sobre:'inicio', projetos:'projetos', stack:'projetos',
-            historico:'projetos', contato:'contato'};
+            historico:'projetos', pastas:'projetos', contato:'contato'};
 var ids = Object.keys(mapa);
 var links = {};
 document.querySelectorAll('nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)] = a; });
