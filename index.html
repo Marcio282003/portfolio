@@ -7,156 +7,122 @@
 <meta name="description" content="Automatizo processos de engenharia: plugins para Autodesk Revit, sistemas internos e correção de dados.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#070a12;
-  --glass:rgba(255,255,255,.055);
-  --glass-forte:rgba(255,255,255,.085);
-  --borda:rgba(255,255,255,.11);
-  --borda-forte:rgba(255,255,255,.2);
-  --texto:#eef1f7;
-  --mute:#9aa4b8;
-  --acento:#7aa2ff;
-  --acento2:#c77dff;
-  --verde:#5ee6a8;
+  --fundo:#f4f3f1;
+  --tinta:#15161a;
+  --mute:#7b7f8a;
+  --linha:rgba(20,22,28,.1);
+  --vidro:rgba(255,255,255,.45);
+  --borda:rgba(255,255,255,.75);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
   font-family:Inter,system-ui,sans-serif;
-  background:var(--bg); color:var(--texto);
-  line-height:1.65; overflow-x:hidden; position:relative;
+  background:var(--fundo); color:var(--tinta);
+  font-size:15px; line-height:1.72; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.col{max-width:560px;margin:0 auto;padding:0 24px}
+
+/* ---------- esferas de vidro ---------- */
+.esfera{position:absolute;border-radius:50%;pointer-events:none;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,.95), rgba(255,255,255,.25) 36%, transparent 58%),
+    radial-gradient(circle at 70% 78%, rgba(255,255,255,.5), transparent 52%),
+    var(--c, linear-gradient(145deg,#c9d4e4,#9aa8c0));
+  box-shadow:
+    inset 0 0 22px rgba(255,255,255,.55),
+    inset -6px -8px 20px rgba(0,0,0,.14),
+    0 10px 26px rgba(28,34,48,.16);
+  animation:boia var(--t,16s) ease-in-out infinite;
+  animation-delay:var(--d,0s);
+}
+@keyframes boia{
+  50%{transform:translateY(var(--sobe,-16px)) translateX(var(--lado,6px)) rotate(var(--gira,4deg))}
 }
 
-/* ---- fundo: orbes desfocados que se movem devagar ---- */
-.fundo{position:fixed; inset:0; z-index:-2; overflow:hidden}
-.orbe{position:absolute; border-radius:50%; filter:blur(90px); opacity:.5}
-.o1{width:52vw;height:52vw;background:#2b4bd8;top:-12vw;left:-8vw;animation:flutua1 24s ease-in-out infinite}
-.o2{width:44vw;height:44vw;background:#8b2fc9;bottom:-14vw;right:-8vw;animation:flutua2 30s ease-in-out infinite}
-.o3{width:34vw;height:34vw;background:#0f766e;top:42%;left:52%;animation:flutua3 26s ease-in-out infinite}
-@keyframes flutua1{50%{transform:translate(8vw,6vw) scale(1.12)}}
-@keyframes flutua2{50%{transform:translate(-7vw,-5vw) scale(1.08)}}
-@keyframes flutua3{50%{transform:translate(-6vw,4vw) scale(.9)}}
-.grao{position:fixed;inset:0;z-index:-1;opacity:.22;pointer-events:none;
-  background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px);
-  background-size:3px 3px}
+/* ---------- topo ---------- */
+header{min-height:100svh;display:flex;align-items:center;justify-content:center;
+  position:relative;text-align:center;padding:90px 0 130px;overflow:hidden}
+.campo{position:absolute;inset:0;pointer-events:none}
+.nome{font-family:Caveat,cursive;font-size:clamp(3.6rem,13vw,6.6rem);font-weight:600;
+  line-height:.92;letter-spacing:.01em;position:relative;z-index:2}
+.cargo{margin-top:22px;color:var(--mute);font-size:14.5px;max-width:330px;
+  margin-left:auto;margin-right:auto;position:relative;z-index:2;line-height:1.6}
 
-/* ---- vidro ---- */
-.vidro{
-  background:var(--glass);
-  backdrop-filter:blur(22px) saturate(160%);
-  -webkit-backdrop-filter:blur(22px) saturate(160%);
-  border:1px solid var(--borda);
-  border-radius:20px;
-}
+/* ---------- menu em pilula ---------- */
+nav{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:60;
+  display:flex;gap:3px;padding:6px;border-radius:999px;
+  background:rgba(22,23,28,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 10px 34px rgba(0,0,0,.26)}
+nav a{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;
+  color:rgba(255,255,255,.55);transition:.22s;text-decoration:none}
+nav a:hover{color:#fff;background:rgba(255,255,255,.12)}
+nav a.ativo{color:#15161a;background:#fff}
+nav svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
 
-/* ---- menu ---- */
-nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:50;
-  display:flex;gap:4px;padding:7px;border-radius:999px}
-nav a{color:var(--mute);text-decoration:none;font-size:13.5px;font-weight:500;
-  padding:8px 16px;border-radius:999px;transition:.25s;white-space:nowrap}
-nav a:hover{color:var(--texto);background:rgba(255,255,255,.08)}
-nav a.ativo{color:#fff;background:rgba(255,255,255,.14)}
+/* ---------- seções ---------- */
+section{padding:60px 0}
+.cab{display:flex;align-items:baseline;gap:13px;margin-bottom:30px}
+.cab .n{color:var(--mute);font-size:12.5px;font-variant-numeric:tabular-nums}
+.cab h2{font-size:17px;font-weight:600;letter-spacing:-.01em}
+p{margin-bottom:16px}
+p:last-child{margin-bottom:0}
+.suave{color:var(--mute)}
+b,strong{font-weight:600}
 
-.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+/* ---------- projetos ---------- */
+.proj{padding:26px 0;border-top:1px solid var(--linha)}
+.proj:first-of-type{border-top:0;padding-top:0}
+.proj h3{font-size:16px;font-weight:600;margin-bottom:3px;letter-spacing:-.01em}
+.proj .papel{color:var(--mute);font-size:13.5px;margin-bottom:14px}
+.cartao{background:var(--vidro);border:1px solid var(--borda);border-radius:14px;
+  padding:16px 18px;margin:16px 0;font-size:13.8px;line-height:1.62;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 6px 22px rgba(28,34,48,.07)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.tag{font-size:11.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--linha);
+  color:var(--mute);background:rgba(255,255,255,.45)}
+a.ler{color:var(--tinta);text-decoration:none;font-size:13.5px;font-weight:500;
+  border-bottom:1px solid var(--linha);padding-bottom:2px;transition:.2s}
+a.ler:hover{border-color:var(--tinta)}
 
-/* ---- topo ---- */
-header{min-height:100vh;display:flex;align-items:center;padding:120px 0 80px}
-.selo{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:999px;
-  font-size:12.5px;color:var(--mute);margin-bottom:26px}
-.ponto{width:7px;height:7px;border-radius:50%;background:var(--verde);
-  box-shadow:0 0 10px var(--verde);animation:pulsa 2.4s infinite}
-@keyframes pulsa{50%{opacity:.35}}
-h1{font-size:clamp(2.4rem,6.5vw,4.3rem);font-weight:700;line-height:1.08;letter-spacing:-.03em;margin-bottom:22px}
-h1 .grad{background:linear-gradient(120deg,var(--acento),var(--acento2));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.sub{font-size:clamp(1rem,2.1vw,1.2rem);color:var(--mute);max-width:620px;margin-bottom:34px}
-.botoes{display:flex;gap:12px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:13px;
-  text-decoration:none;font-weight:600;font-size:14.5px;transition:.25s;border:1px solid transparent}
-.btn-1{background:linear-gradient(120deg,var(--acento),var(--acento2));color:#07101f}
-.btn-1:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(122,162,255,.3)}
-.btn-2{background:var(--glass);border-color:var(--borda);color:var(--texto);
-  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
-.btn-2:hover{background:var(--glass-forte);border-color:var(--borda-forte);transform:translateY(-2px)}
+/* ---------- linha do tempo ---------- */
+.item{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:15px 0;
+  border-top:1px solid var(--linha)}
+.item:first-of-type{border-top:0;padding-top:0}
+.item .ano{color:var(--mute);font-size:13px;font-variant-numeric:tabular-nums;padding-top:1px}
+.item .oq strong{display:block;font-size:14.5px;font-weight:600}
+.item .oq span{color:var(--mute);font-size:13.3px}
 
-/* ---- seções ---- */
-section{padding:78px 0}
-.tit{font-size:clamp(1.6rem,3.6vw,2.3rem);font-weight:700;letter-spacing:-.025em;margin-bottom:10px}
-.tit-sub{color:var(--mute);margin-bottom:38px;font-size:15px;max-width:620px}
+/* ---------- stack ---------- */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.chip{font-size:12.5px;padding:5px 12px;border-radius:999px;
+  background:var(--vidro);border:1px solid var(--borda);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 
-/* ---- projetos ---- */
-.projetos{display:flex;flex-direction:column;gap:20px}
-.proj{padding:30px;transition:.3s;position:relative;overflow:hidden}
-.proj::before{content:"";position:absolute;inset:0;opacity:0;transition:.3s;
-  background:linear-gradient(120deg,rgba(122,162,255,.09),rgba(199,125,255,.05))}
-.proj:hover{transform:translateY(-3px);border-color:var(--borda-forte)}
-.proj:hover::before{opacity:1}
-.proj>*{position:relative;z-index:1}
-.proj-topo{display:flex;align-items:flex-start;gap:15px;margin-bottom:14px;flex-wrap:wrap}
-.emoji{font-size:1.7rem;line-height:1}
-.proj h3{font-size:1.28rem;font-weight:650;letter-spacing:-.015em;margin-bottom:3px}
-.proj .papel{color:var(--mute);font-size:13.5px}
-.proj p{color:#c3cadb;font-size:14.7px;margin-bottom:18px}
-.destaque{display:inline-block;padding:11px 15px;border-left:2.5px solid var(--acento);
-  background:rgba(122,162,255,.07);border-radius:0 9px 9px 0;font-size:13.8px;
-  color:#d6def0;margin-bottom:18px}
-.destaque b{color:#fff}
-.tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
-.tag{font-size:11.5px;padding:5px 11px;border-radius:7px;background:rgba(255,255,255,.07);
-  border:1px solid var(--borda);color:var(--mute);font-weight:500}
-.link{color:var(--acento);text-decoration:none;font-weight:600;font-size:14px;
-  display:inline-flex;align-items:center;gap:6px;transition:.2s}
-.link:hover{gap:11px;color:#a5c0ff}
+/* ---------- contato ---------- */
+.contato a{color:var(--tinta);text-decoration:none;border-bottom:1px solid var(--linha);
+  padding-bottom:2px;transition:.2s}
+.contato a:hover{border-color:var(--tinta)}
 
-/* ---- números ---- */
-.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
-.num{padding:26px 20px;text-align:center}
-.num .v{font-size:2.05rem;font-weight:700;letter-spacing:-.03em;
-  background:linear-gradient(120deg,var(--acento),var(--acento2));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.num .r{color:var(--mute);font-size:12.8px;margin-top:5px}
+/* ---------- rodape com esferas ---------- */
+.rodape{position:relative;height:290px;overflow:hidden;margin-top:30px}
+.assinatura{position:absolute;bottom:92px;left:0;right:0;text-align:center;
+  color:var(--mute);font-size:12.5px;z-index:2}
 
-/* ---- stack ---- */
-.duas{display:grid;grid-template-columns:1.15fr 1fr;gap:20px}
-.bloco{padding:30px}
-.bloco h4{font-size:1.02rem;font-weight:650;margin-bottom:15px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.chip{font-size:13px;padding:7px 13px;border-radius:9px;background:rgba(255,255,255,.065);
-  border:1px solid var(--borda);transition:.2s}
-.chip:hover{background:rgba(255,255,255,.11);transform:translateY(-1px)}
-.nota{color:var(--mute);font-size:13.8px}
-.linha-t{display:flex;gap:14px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.linha-t:last-child{border:0;padding-bottom:0}
-.linha-t .ano{color:var(--acento);font-size:12.5px;font-weight:600;white-space:nowrap;min-width:72px;padding-top:2px}
-.linha-t .txt strong{display:block;font-size:14.6px;margin-bottom:2px}
-.linha-t .txt span{color:var(--mute);font-size:13.3px}
-
-/* ---- transparência ---- */
-.transp{padding:30px;border-left:3px solid var(--acento2)}
-.transp h4{font-size:1.05rem;margin-bottom:12px}
-.transp p{color:#c3cadb;font-size:14.4px;margin-bottom:11px}
-.transp p:last-child{margin:0}
-.transp b{color:#fff}
-
-/* ---- contato ---- */
-.contato{padding:52px 34px;text-align:center}
-.contato h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700;margin-bottom:12px;letter-spacing:-.02em}
-.contato p{color:var(--mute);margin-bottom:28px;font-size:15px}
-footer{padding:36px 0 46px;text-align:center;color:var(--mute);font-size:13px}
-
-/* ---- revelar ao rolar ---- */
-.rev{opacity:0;transform:translateY(22px);transition:.7s cubic-bezier(.2,.7,.3,1)}
+/* ---------- revelar ---------- */
+.rev{opacity:0;transform:translateY(16px);transition:.75s cubic-bezier(.2,.7,.3,1)}
 .rev.on{opacity:1;transform:none}
 
-@media(max-width:820px){
-  .duas{grid-template-columns:1fr}
-  nav{top:auto;bottom:16px;max-width:calc(100% - 28px);overflow-x:auto}
-  nav a{padding:8px 13px;font-size:12.8px}
-  header{min-height:auto;padding:110px 0 60px}
-  section{padding:56px 0}
-  .proj,.bloco,.transp{padding:24px}
+@media(max-width:560px){
+  .item{grid-template-columns:76px 1fr;gap:12px}
+  header{padding:70px 0 120px}
+  .rodape{height:220px}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -166,152 +132,156 @@ footer{padding:36px 0 46px;text-align:center;color:var(--mute);font-size:13px}
 </head>
 <body>
 
-<div class="fundo"><div class="orbe o1"></div><div class="orbe o2"></div><div class="orbe o3"></div></div>
-<div class="grao"></div>
-
-<nav class="vidro">
-  <a href="#inicio" class="ativo">Início</a>
-  <a href="#projetos">Projetos</a>
-  <a href="#stack">Stack</a>
-  <a href="#contato">Contato</a>
+<nav>
+  <a href="#inicio" class="ativo" aria-label="Início"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></a>
+  <a href="#projetos" aria-label="Projetos"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></a>
+  <a href="#contato" aria-label="Contato"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.6 7.2"/></svg></a>
 </nav>
 
 <header id="inicio">
-  <div class="wrap">
-    <div class="selo vidro"><span class="ponto"></span> Disponível para novas oportunidades</div>
-    <h1>Comecei em suporte técnico e acabei entregando as <span class="grad">ferramentas que a equipe usava</span>.</h1>
-    <p class="sub">Automatizo processos de engenharia: plugins para Autodesk Revit, sistemas internos e correção de dados. Cursando Análise e Desenvolvimento de Sistemas na PUC Minas.</p>
-    <div class="botoes">
-      <a href="#projetos" class="btn btn-1">Ver os projetos →</a>
-      <a href="https://github.com/Marcio282003" target="_blank" rel="noopener" class="btn btn-2">GitHub</a>
-    </div>
+  <div class="campo" id="campo"></div>
+  <div class="col">
+    <h1 class="nome">Marcio Cezar</h1>
+    <p class="cargo">Automatizo processos de engenharia.<br>Plugins para Revit, sistemas internos<br>e correção de dados.</p>
   </div>
 </header>
 
-<section id="projetos">
-  <div class="wrap">
-    <h2 class="tit rev">O que eu entreguei</h2>
-    <p class="tit-sub rev">Três projetos construídos na VIAVOZ LTDA, empresa de engenharia e arquitetura. Cada um tem um estudo de caso com as decisões, os bugs e os limites.</p>
-
-    <div class="projetos">
-
-      <article class="proj vidro rev">
-        <div class="proj-topo">
-          <span class="emoji">🎨</span>
-          <div><h3>Render BIM</h3><div class="papel">Plugin de renderização em tempo real para Autodesk Revit</div></div>
-        </div>
-        <p>Alternativa interna ao Enscape. O visualizador 3D roda <b>em processo separado</b> do Revit — um crash de GPU não derruba o trabalho do arquiteto, e o motor gráfico pode ser trocado sem mexer na integração.</p>
-        <div class="destaque"><b>21 versões</b> entregues · <b>147 testes</b> automatizados · testado dentro do Revit a cada ciclo</div>
-        <div class="tags"><span class="tag">C#</span><span class="tag">.NET 8</span><span class="tag">Direct3D 11</span><span class="tag">Revit API</span></div>
-        <a class="link" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-01-Render-BIM.md" target="_blank" rel="noopener">Ler o estudo de caso →</a>
-      </article>
-
-      <article class="proj vidro rev">
-        <div class="proj-topo">
-          <span class="emoji">📊</span>
-          <div><h3>Registro de Horas</h3><div class="papel">Diagnóstico e correção de um sistema em produção</div></div>
-        </div>
-        <p>Os totais de horas <b>mudavam sozinhos</b> entre dois carregamentos da página. A causa era paginação ordenada por uma coluna que se repete: cerca de 70 registros duplicavam e 70 sumiam a cada leitura, sem gerar nenhum erro.</p>
-        <div class="destaque">Conferido contra o banco, obra por obra: <b>11 de 11 corretas</b> contra 4 de 11. A correção eram 3 linhas — que decidi <b>não</b> aplicar, porque o sistema era de outra pessoa e estava em produção.</div>
-        <div class="tags"><span class="tag">JavaScript</span><span class="tag">PostgreSQL</span><span class="tag">Supabase</span><span class="tag">SQL</span></div>
-        <a class="link" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-02-Registro-de-Horas.md" target="_blank" rel="noopener">Ler o estudo de caso →</a>
-      </article>
-
-      <article class="proj vidro rev">
-        <div class="proj-topo">
-          <span class="emoji">📦</span>
-          <div><h3>MC-Blocks</h3><div class="papel">Biblioteca de famílias para Revit, substituindo ferramenta comercial</div></div>
-        </div>
-        <p>A ferramenta paga que a equipe usava parou de funcionar e <b>sumia da aba</b> do Revit. O substituto lê a biblioteca da própria empresa e compila para três versões do Revit a partir do mesmo código-fonte.</p>
-        <div class="destaque"><b>32 mil famílias</b>, 13 GB, lidas direto do servidor · implantado na equipe de arquitetura e depois numa <b>empresa parceira</b></div>
-        <div class="tags"><span class="tag">C#</span><span class="tag">WPF</span><span class="tag">Revit API</span><span class="tag">PowerShell</span></div>
-        <a class="link" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-03-MC-Blocks.md" target="_blank" rel="noopener">Ler o estudo de caso →</a>
-      </article>
-
+<section id="sobre">
+  <div class="col">
+    <div class="cab rev"><span class="n">1</span><h2>Sobre</h2></div>
+    <div class="rev">
+      <p>Comecei em suporte técnico numa empresa de engenharia e arquitetura e acabei entregando as ferramentas que as equipes de projeto usavam todo dia.</p>
+      <p class="suave">Cursando Análise e Desenvolvimento de Sistemas na PUC Minas. Os três projetos abaixo foram construídos com apoio intensivo de IA — meu papel foi especificar, testar, decidir escopo e risco, e conduzir a implantação.</p>
     </div>
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <div class="nums">
-      <div class="num vidro rev"><div class="v">21</div><div class="r">versões entregues</div></div>
-      <div class="num vidro rev"><div class="v">147</div><div class="r">testes automatizados</div></div>
-      <div class="num vidro rev"><div class="v">32 mil</div><div class="r">famílias catalogadas</div></div>
-      <div class="num vidro rev"><div class="v">2</div><div class="r">empresas atendidas</div></div>
-    </div>
+<section id="projetos">
+  <div class="col">
+    <div class="cab rev"><span class="n">2</span><h2>Projetos</h2></div>
+
+    <article class="proj rev">
+      <h3>Render BIM</h3>
+      <div class="papel">Plugin de renderização em tempo real para Autodesk Revit</div>
+      <p>Alternativa interna ao Enscape. O visualizador 3D roda <b>em processo separado</b> do Revit — um crash de GPU não derruba o trabalho do arquiteto, e o motor gráfico pode ser trocado sem mexer na integração.</p>
+      <div class="cartao"><b>21 versões</b> entregues · <b>147 testes</b> automatizados · validado dentro do Revit a cada ciclo</div>
+      <div class="tags"><span class="tag">C#</span><span class="tag">.NET 8</span><span class="tag">Direct3D 11</span><span class="tag">Revit API</span></div>
+      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-01-Render-BIM.md" target="_blank" rel="noopener">Ler o estudo de caso ↗</a>
+    </article>
+
+    <article class="proj rev">
+      <h3>Registro de Horas</h3>
+      <div class="papel">Diagnóstico e correção de um sistema em produção</div>
+      <p>Os totais de horas <b>mudavam sozinhos</b> entre dois carregamentos da página. A causa era paginação ordenada por uma coluna que se repete: cerca de 70 registros duplicavam e 70 sumiam a cada leitura, sem gerar erro nenhum.</p>
+      <div class="cartao">Conferido contra o banco, obra por obra: <b>11 de 11 corretas</b> contra 4 de 11. A correção eram 3 linhas — que decidi <b>não</b> aplicar, porque o sistema era de outra pessoa e estava em produção.</div>
+      <div class="tags"><span class="tag">JavaScript</span><span class="tag">PostgreSQL</span><span class="tag">Supabase</span><span class="tag">SQL</span></div>
+      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-02-Registro-de-Horas.md" target="_blank" rel="noopener">Ler o estudo de caso ↗</a>
+    </article>
+
+    <article class="proj rev">
+      <h3>MC-Blocks</h3>
+      <div class="papel">Biblioteca de famílias para Revit, substituindo ferramenta comercial</div>
+      <p>A ferramenta paga que a equipe usava parou de funcionar e <b>sumia da aba</b> do Revit. O substituto lê a biblioteca da própria empresa e compila para três versões do Revit a partir do mesmo código-fonte.</p>
+      <div class="cartao"><b>32 mil famílias</b>, 13 GB, lidas direto do servidor · implantado na equipe de arquitetura e depois numa <b>empresa parceira</b></div>
+      <div class="tags"><span class="tag">C#</span><span class="tag">WPF</span><span class="tag">Revit API</span><span class="tag">PowerShell</span></div>
+      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-03-MC-Blocks.md" target="_blank" rel="noopener">Ler o estudo de caso ↗</a>
+    </article>
   </div>
 </section>
 
 <section id="stack">
-  <div class="wrap">
-    <h2 class="tit rev">Stack e trajetória</h2>
-    <p class="tit-sub rev">O que uso e de onde vim.</p>
-    <div class="duas">
-      <div class="bloco vidro rev">
-        <h4>Tecnologias</h4>
-        <div class="chips">
-          <span class="chip">C#</span><span class="chip">.NET 8</span><span class="chip">SQL</span>
-          <span class="chip">PostgreSQL</span><span class="chip">Supabase</span><span class="chip">JavaScript</span>
-          <span class="chip">PHP</span><span class="chip">WPF</span><span class="chip">Revit API</span>
-          <span class="chip">PowerShell</span><span class="chip">Git</span>
-        </div>
-        <p class="nota">Estou aprendendo os fundamentos de programação na faculdade agora. O que entreguei até aqui veio de entender bem o problema, testar com rigor e levar o projeto até o fim.</p>
+  <div class="col">
+    <div class="cab rev"><span class="n">3</span><h2>Tecnologias</h2></div>
+    <div class="rev">
+      <div class="chips">
+        <span class="chip">C#</span><span class="chip">.NET 8</span><span class="chip">SQL</span>
+        <span class="chip">PostgreSQL</span><span class="chip">Supabase</span><span class="chip">JavaScript</span>
+        <span class="chip">PHP</span><span class="chip">WPF</span><span class="chip">Revit API</span>
+        <span class="chip">PowerShell</span><span class="chip">Git</span>
       </div>
-      <div class="bloco vidro rev">
-        <h4>Trajetória</h4>
-        <div class="linha-t"><div class="ano">2026 →</div><div class="txt"><strong>Visual Systems</strong><span>Totens de autoatendimento</span></div></div>
-        <div class="linha-t"><div class="ano">2025–26</div><div class="txt"><strong>VIAVOZ LTDA</strong><span>Suporte técnico · automação de processos de engenharia</span></div></div>
-        <div class="linha-t"><div class="ano">Cursando</div><div class="txt"><strong>Análise e Desenvolvimento de Sistemas</strong><span>PUC Minas</span></div></div>
-      </div>
+      <p class="suave">Estou aprendendo os fundamentos de programação na faculdade agora. O que entreguei até aqui veio de entender bem o problema, testar com rigor e levar o projeto até o fim.</p>
     </div>
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <div class="transp vidro rev">
-      <h4>Como estes projetos foram construídos</h4>
-      <p>Os três foram desenvolvidos <b>com apoio intensivo de IA</b>. Prefiro que isso fique claro desde o início.</p>
-      <p><b>O que foi meu:</b> identificar o problema, escrever a especificação, testar cada versão e reportar os defeitos com precisão, decidir escopo e risco, e conduzir a implantação pelas equipes.</p>
-      <p><b>O que foi da IA:</b> escrever o código, propor a arquitetura e investigar as causas dos defeitos a partir dos meus relatos de teste.</p>
-      <p class="nota">O código-fonte pertence à empresa, então os estudos de caso descrevem decisões e resultados, sem reproduzir código proprietário.</p>
+<section id="historico">
+  <div class="col">
+    <div class="cab rev"><span class="n">4</span><h2>Trajetória</h2></div>
+    <div class="rev">
+      <div class="item"><div class="ano">2026 →</div><div class="oq"><strong>Visual Systems</strong><span>Totens de autoatendimento</span></div></div>
+      <div class="item"><div class="ano">2025 – 2026</div><div class="oq"><strong>VIAVOZ LTDA</strong><span>Suporte técnico · automação de processos de engenharia</span></div></div>
+      <div class="item"><div class="ano">Cursando</div><div class="oq"><strong>Análise e Desenvolvimento de Sistemas</strong><span>PUC Minas</span></div></div>
     </div>
   </div>
 </section>
 
 <section id="contato">
-  <div class="wrap">
-    <div class="contato vidro rev">
-      <h2>Vamos conversar</h2>
+  <div class="col">
+    <div class="cab rev"><span class="n">5</span><h2>Contato</h2></div>
+    <div class="contato rev">
       <p>Aberto a oportunidades em desenvolvimento, automação e sistemas internos.</p>
-      <div class="botoes" style="justify-content:center">
-        <a href="mailto:marciogamercaldeira@gmail.com" class="btn btn-1">Enviar e-mail</a>
-        <a href="https://github.com/Marcio282003" target="_blank" rel="noopener" class="btn btn-2">GitHub</a>
-      </div>
+      <p>
+        <a href="mailto:marciogamercaldeira@gmail.com">marciogamercaldeira@gmail.com</a><br>
+        <a href="https://github.com/Marcio282003" target="_blank" rel="noopener">github.com/Marcio282003</a>
+      </p>
     </div>
   </div>
 </section>
 
-<footer>Marcio Cezar · Belo Horizonte, MG</footer>
+<div class="rodape"><div class="campo" id="campo2"></div><div class="assinatura">Belo Horizonte, MG</div></div>
 
 <script>
-// revelar ao rolar
+// ---- esferas de vidro ----
+var PALETA = [
+  'linear-gradient(145deg,#cfd9e8,#97a7c2)',
+  'linear-gradient(145deg,#e6dcd0,#bfae99)',
+  'linear-gradient(145deg,#d2e3dc,#94b6aa)',
+  'linear-gradient(145deg,#3c4250,#1d2129)',
+  'linear-gradient(145deg,#e8d8dd,#c2a0ac)',
+  'linear-gradient(145deg,#dfe3e7,#aeb6c0)',
+  'linear-gradient(145deg,#d8d2e8,#a398c4)'
+];
+function semear(alvo, qtd, min, max, evitarMeio){
+  var frag = document.createDocumentFragment();
+  for(var i=0;i<qtd;i++){
+    var d = min + Math.random()*(max-min);
+    var x = Math.random()*100, y = Math.random()*100;
+    // deixa o centro livre para o nome não brigar com as esferas
+    if(evitarMeio && x>24 && x<76 && y>26 && y<74){ x = x<50 ? x-24 : x+24; }
+    var e = document.createElement('div');
+    e.className = 'esfera';
+    e.style.width = e.style.height = d+'px';
+    e.style.left = x+'%'; e.style.top = y+'%';
+    e.style.setProperty('--c', PALETA[(Math.random()*PALETA.length)|0]);
+    e.style.setProperty('--t', (12+Math.random()*12).toFixed(1)+'s');
+    e.style.setProperty('--d', (-Math.random()*12).toFixed(1)+'s');
+    e.style.setProperty('--sobe', (-10-Math.random()*22).toFixed(0)+'px');
+    e.style.setProperty('--lado', (Math.random()*16-8).toFixed(0)+'px');
+    e.style.setProperty('--gira', (Math.random()*10-5).toFixed(0)+'deg');
+    e.style.opacity = (.55+Math.random()*.4).toFixed(2);
+    frag.appendChild(e);
+  }
+  alvo.appendChild(frag);
+}
+var estreito = window.matchMedia('(max-width:560px)').matches;
+semear(document.getElementById('campo'),  estreito?9:16, estreito?34:48, estreito?62:104, true);
+semear(document.getElementById('campo2'), estreito?12:22, estreito?22:30, estreito?48:78, false);
+
+// ---- revelar ao rolar ----
 var io = new IntersectionObserver(function(es){
   es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
-}, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.rev').forEach(function(el,i){
-  el.style.transitionDelay = (i % 4) * 70 + 'ms';
-  io.observe(el);
-});
+}, {threshold:.15, rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.rev').forEach(function(el){ io.observe(el); });
 
-// marcar o item do menu da seção visível
-var secoes = ['inicio','projetos','stack','contato'].map(function(id){ return document.getElementById(id); });
+// ---- menu acompanha a seção ----
+var mapa = {inicio:'inicio', sobre:'inicio', projetos:'projetos', stack:'projetos',
+            historico:'projetos', contato:'contato'};
+var ids = Object.keys(mapa);
 var links = {};
 document.querySelectorAll('nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)] = a; });
 function marcar(){
-  var y = window.scrollY + window.innerHeight * 0.32, atual = 'inicio';
-  secoes.forEach(function(s){ if(s && s.offsetTop <= y) atual = s.id; });
+  var y = window.scrollY + window.innerHeight*0.4, atual = 'inicio';
+  ids.forEach(function(id){ var s = document.getElementById(id); if(s && s.offsetTop <= y) atual = mapa[id]; });
   for(var k in links) links[k].classList.toggle('ativo', k === atual);
 }
 window.addEventListener('scroll', marcar, {passive:true});
