@@ -276,14 +276,18 @@ section{padding:92px 0;position:relative}
   box-shadow:0 0 0 5px rgba(255,255,255,.1),0 0 30px rgba(255,255,255,.3)}
 .no svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.65;
   stroke-linecap:round;stroke-linejoin:round}
-.no .rotulo{position:absolute;left:50%;top:34px;transform:translateX(-50%);white-space:nowrap;
-  font-size:11.4px;font-weight:600;color:var(--mute2);transition:color .3s}
-.no.on .rotulo{color:#fff}
-.no .q{position:absolute;left:50%;top:48px;transform:translateX(-50%);white-space:nowrap;
-  font-family:'JetBrains Mono',monospace;font-size:9.6px;color:var(--mute);opacity:.75}
+.no .rotulo{position:absolute;left:50%;top:36px;transform:translateX(-50%);white-space:nowrap;
+  font-size:12.4px;font-weight:600;letter-spacing:-.005em;color:rgba(255,255,255,.72);
+  transition:color .3s,transform .3s}
+.no.on .rotulo{color:#fff;transform:translateX(-50%) scale(1.08)}
+.no .q{position:absolute;left:50%;top:54px;transform:translateX(-50%);white-space:nowrap;
+  font-family:'JetBrains Mono',monospace;font-size:9.8px;color:var(--mute);opacity:.7;
+  transition:opacity .25s}
+/* a data ja aparece dentro do cartao: fora daqui para nao empilhar texto */
+.no.on .q{opacity:0}
 /* cartao preso ao no, como no original */
-.cartao-no{position:absolute;left:50%;top:70px;width:264px;margin-left:-132px;z-index:300;
-  padding:16px 17px;border-radius:15px;text-align:left;
+.cartao-no{position:absolute;left:50%;top:62px;width:266px;margin-left:-133px;z-index:300;
+  padding:17px 18px;border-radius:15px;text-align:left;
   background:rgba(8,9,13,.9);backdrop-filter:blur(20px) saturate(180%);
   -webkit-backdrop-filter:blur(20px) saturate(180%);
   border:1px solid rgba(255,255,255,.22);
@@ -292,11 +296,11 @@ section{padding:92px 0;position:relative}
   transition:opacity .34s,transform .34s}
 .no.on .cartao-no{opacity:1;transform:none;pointer-events:auto}
 /* a linha fina que liga o cartao ao no */
-.cartao-no::before{content:"";position:absolute;top:-13px;left:50%;width:1px;height:13px;
-  background:rgba(255,255,255,.5)}
-.cn-topo{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
-.selo-st{font-size:9.4px;font-weight:700;letter-spacing:.09em;padding:3px 8px;border-radius:999px;
-  border:1px solid;text-transform:uppercase;white-space:nowrap}
+.cartao-no::before{content:"";position:absolute;top:-10px;left:50%;width:1px;height:10px;
+  background:linear-gradient(rgba(255,255,255,.08),rgba(255,255,255,.55))}
+.cn-topo{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}
+.selo-st{font-size:9.2px;font-weight:700;letter-spacing:.1em;padding:3.5px 9px;border-radius:999px;
+  border:1px solid;text-transform:uppercase;white-space:nowrap;line-height:1}
 .st-feito{color:#07080c;background:#fff;border-color:#fff}
 .st-agora{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.65)}
 .st-prox{color:var(--mute2);background:transparent;border-color:rgba(255,255,255,.3)}
@@ -633,8 +637,10 @@ var PERCURSO = [
       n.classList.toggle('liga', ligados.indexOf(j) >= 0);
     });
     if(det) det.style.opacity = '0';
-    // gira a orbita ate o no escolhido parar embaixo do nucleo
-    alvoGiro = (Math.PI/2) - (k / nos.length) * Math.PI*2;
+    // gira ate o no escolhido parar NO TOPO da orbita.
+    // posicao de um no: ang = (k/n)*2PI + giro - PI/2. topo e ang = -PI/2,
+    // logo giro = -(k/n)*2PI. (antes eu somava PI/2 a mais e caia na direita)
+    alvoGiro = -(k / nos.length) * Math.PI*2;
   }
   function fechar(){
     aberto = null; alvoGiro = null;
@@ -657,12 +663,11 @@ var PERCURSO = [
       var cx = Math.cos(ang), sy = Math.sin(ang);
       n.style.transform = 'translate(' + (cx*r).toFixed(1) + 'px,' + (sy*r).toFixed(1) + 'px)';
       // profundidade: quem esta na frente cobre e aparece mais
-      n.style.setProperty('--z', Math.round(100 + 50*cx));
-      n.style.setProperty('--op', (n.classList.contains('on') ? 1 :
+      var ligado = n.classList.contains('on');
+      // o no aberto fica na frente de tudo, para o cartao nao ser coberto
+      n.style.setProperty('--z', ligado ? 500 : Math.round(100 + 50*cx));
+      n.style.setProperty('--op', (ligado ? 1 :
         Math.max(.42, Math.min(1, .42 + .58*((1+sy)/2)))).toFixed(2));
-      // mantem o cartao dentro da area visivel
-      var c = n.querySelector('.cartao-no');
-      if(c) c.style.marginLeft = (-132 - Math.max(-96, Math.min(96, cx*r*0.55))) + 'px';
     });
   }
 
