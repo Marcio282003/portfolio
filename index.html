@@ -7,207 +7,233 @@
 <meta name="description" content="Automatizo processos de engenharia: plugins para Autodesk Revit, sistemas internos e correção de dados.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --fundo:#f4f3f1;
-  --tinta:#15161a;
-  --mute:#7b7f8a;
-  --linha:rgba(20,22,28,.1);
-  --vidro:rgba(255,255,255,.45);
-  --borda:rgba(255,255,255,.75);
+  --preto:#050507;
+  --tinta:#f2f4f8;
+  --mute:#7f8694;
+  --mute2:#aab1be;
+  --aco:#8fb4ff;
+  --quente:#ffb86b;
+  --v-fundo:rgba(255,255,255,.045);
+  --v-fundo-2:rgba(255,255,255,.075);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
   font-family:Inter,system-ui,sans-serif;
-  background:var(--fundo); color:var(--tinta);
-  font-size:15px; line-height:1.72; overflow-x:hidden;
+  background:var(--preto); color:var(--tinta);
+  font-size:15.5px; line-height:1.7; overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
-.col{max-width:560px;margin:0 auto;padding:0 24px}
+::selection{background:rgba(143,180,255,.3)}
 
-/* ---------- esferas de vidro ---------- */
-/* a casca recebe a paralaxe do JS; a esfera dentro dela flutua sozinha pelo CSS.
-   Separar as duas evita que um transform apague o outro. */
-.casca{position:absolute;pointer-events:none;will-change:transform}
-.esfera{border-radius:50%;pointer-events:none;width:100%;height:100%;
+/* ============ fundo ============ */
+.ceu{position:fixed;inset:0;z-index:-3;
   background:
-    radial-gradient(circle at 30% 24%, rgba(255,255,255,.95), rgba(255,255,255,.25) 36%, transparent 58%),
-    radial-gradient(circle at 70% 78%, rgba(255,255,255,.5), transparent 52%),
-    var(--c, linear-gradient(145deg,#c9d4e4,#9aa8c0));
-  box-shadow:
-    inset 0 0 22px rgba(255,255,255,.55),
-    inset -6px -8px 20px rgba(0,0,0,.14),
-    0 10px 26px rgba(28,34,48,.16);
-  animation:boia var(--t,16s) ease-in-out infinite;
-  animation-delay:var(--d,0s);
-}
-@keyframes boia{
-  50%{transform:translateY(var(--sobe,-16px)) translateX(var(--lado,6px)) rotate(var(--gira,4deg))}
-}
+    radial-gradient(90vw 70vh at 18% -10%, rgba(42,66,140,.5), transparent 62%),
+    radial-gradient(70vw 60vh at 88% 8%, rgba(96,42,124,.38), transparent 60%),
+    radial-gradient(80vw 70vh at 50% 108%, rgba(18,72,88,.34), transparent 60%),
+    var(--preto)}
+.ceu::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(60vw 50vh at 50% 40%, transparent, rgba(5,5,7,.82) 78%)}
+.malha{position:fixed;inset:0;z-index:-2;opacity:.05;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.7) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);
+  background-size:74px 74px;
+  mask-image:radial-gradient(70vw 70vh at 50% 22%,#000,transparent 72%);
+  -webkit-mask-image:radial-gradient(70vw 70vh at 50% 22%,#000,transparent 72%)}
+.ruido{position:fixed;inset:0;z-index:-1;opacity:.5;pointer-events:none;mix-blend-mode:overlay;
+  background-image:radial-gradient(rgba(255,255,255,.1) .5px,transparent .5px);
+  background-size:2.5px 2.5px}
 
-/* ---------- topo ---------- */
-header{min-height:100svh;display:flex;align-items:center;justify-content:center;
-  position:relative;text-align:center;padding:90px 0 130px;overflow:hidden}
-.campo{position:absolute;inset:0;pointer-events:none}
-.nome{font-family:Caveat,cursive;font-size:clamp(3.6rem,13vw,6.6rem);font-weight:600;
-  line-height:.92;letter-spacing:.01em;position:relative;z-index:2}
-.cargo{margin-top:22px;color:var(--mute);font-size:14.5px;max-width:330px;
-  margin-left:auto;margin-right:auto;position:relative;z-index:2;line-height:1.6}
+/* ============ liquid glass ============ */
+.lg{position:relative;border-radius:20px;
+  background:linear-gradient(140deg,var(--v-fundo-2),var(--v-fundo) 42%,rgba(255,255,255,.03));
+  backdrop-filter:blur(32px) saturate(185%);
+  -webkit-backdrop-filter:blur(32px) saturate(185%);
+  box-shadow:0 1px 0 rgba(255,255,255,.1) inset,
+             0 -14px 40px rgba(0,0,0,.3) inset,
+             0 24px 60px rgba(0,0,0,.46);
+  overflow:hidden;isolation:isolate}
+/* borda especular: clara em cima, some embaixo */
+.lg::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(140deg,rgba(255,255,255,.5),rgba(255,255,255,.1) 32%,
+             transparent 58%,rgba(255,255,255,.17));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude;pointer-events:none;z-index:2}
+/* reflexo que segue o cursor */
+.lg::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),
+             rgba(255,255,255,.1),transparent 42%);
+  opacity:0;transition:opacity .45s;z-index:1}
+.lg:hover::after{opacity:1}
+.lg>*{position:relative;z-index:1}
 
-/* ---------- menu em pilula ---------- */
-nav{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:60;
-  display:flex;gap:3px;padding:6px;border-radius:999px;
-  background:rgba(22,23,28,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  box-shadow:0 10px 34px rgba(0,0,0,.26)}
-nav a{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;
-  color:rgba(255,255,255,.55);transition:.22s;text-decoration:none}
-nav a:hover{color:#fff;background:rgba(255,255,255,.12)}
-nav a.ativo{color:#15161a;background:#fff}
-nav svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;
-  stroke-linecap:round;stroke-linejoin:round}
+.col{max-width:900px;margin:0 auto;padding:0 28px}
 
-/* ---------- seções ---------- */
-section{padding:60px 0}
-.cab{display:flex;align-items:baseline;gap:13px;margin-bottom:30px}
-.cab .n{color:var(--mute);font-size:12.5px;font-variant-numeric:tabular-nums}
-.cab h2{font-size:17px;font-weight:600;letter-spacing:-.01em}
-p{margin-bottom:16px}
-p:last-child{margin-bottom:0}
-.suave{color:var(--mute)}
-b,strong{font-weight:600}
+/* ============ menu ============ */
+nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:80;
+  display:flex;gap:2px;padding:5px;border-radius:999px;
+  background:rgba(255,255,255,.055);backdrop-filter:blur(26px) saturate(180%);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 1px 0 rgba(255,255,255,.14) inset,0 16px 40px rgba(0,0,0,.6)}
+nav a{padding:9px 17px;border-radius:999px;color:var(--mute);text-decoration:none;
+  font-size:12.6px;font-weight:500;letter-spacing:.01em;transition:.26s;white-space:nowrap}
+nav a:hover{color:var(--tinta)}
+nav a.ativo{color:#07080c;background:linear-gradient(140deg,#fff,#cfd7e6);
+  box-shadow:0 2px 12px rgba(255,255,255,.22)}
 
-/* ---------- projetos ---------- */
-.proj{padding:26px 0;border-top:1px solid var(--linha)}
-.proj:first-of-type{border-top:0;padding-top:0}
-.proj h3{font-size:16px;font-weight:600;margin-bottom:3px;letter-spacing:-.01em}
-.proj .papel{color:var(--mute);font-size:13.5px;margin-bottom:14px}
-.cartao{background:var(--vidro);border:1px solid var(--borda);border-radius:14px;
-  padding:16px 18px;margin:16px 0;font-size:13.8px;line-height:1.62;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  box-shadow:0 6px 22px rgba(28,34,48,.07)}
-.tags{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
-.tag{font-size:11.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--linha);
-  color:var(--mute);background:rgba(255,255,255,.45)}
-a.ler{color:var(--tinta);text-decoration:none;font-size:13.5px;font-weight:500;
-  border-bottom:1px solid var(--linha);padding-bottom:2px;transition:.2s}
-a.ler:hover{border-color:var(--tinta)}
+/* ============ topo ============ */
+header{min-height:100svh;display:flex;align-items:center;padding:110px 0 120px;position:relative}
+.etiqueta{display:inline-flex;align-items:center;gap:9px;padding:7px 15px;border-radius:999px;
+  font-size:11.6px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute2);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);margin-bottom:34px}
+.pisca{width:6px;height:6px;border-radius:50%;background:var(--quente);
+  box-shadow:0 0 12px var(--quente);animation:bate 2.6s ease-in-out infinite}
+@keyframes bate{50%{opacity:.3}}
+h1{font-size:clamp(3rem,10.5vw,7.4rem);font-weight:800;line-height:.9;
+  letter-spacing:-.045em;margin-bottom:30px}
+h1 em{font-style:normal;display:block;
+  background:linear-gradient(104deg,#fff 12%,#9fb6e0 48%,#5f6f8c 92%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{font-size:clamp(1rem,2vw,1.2rem);color:var(--mute2);max-width:530px;
+  font-weight:300;line-height:1.65;margin-bottom:40px}
+.acoes{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:999px;
+  text-decoration:none;font-size:14px;font-weight:600;transition:.3s;position:relative;overflow:hidden}
+.btn-claro{background:linear-gradient(140deg,#fff,#d2d9e8);color:#07080c;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 34px rgba(255,255,255,.14)}
+.btn-claro:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 46px rgba(255,255,255,.24)}
+.btn-vidro{background:rgba(255,255,255,.06);color:var(--tinta);
+  border:1px solid rgba(255,255,255,.13);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  box-shadow:0 1px 0 rgba(255,255,255,.14) inset}
+.btn-vidro:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
 
-/* ---------- linha do tempo ---------- */
-.item{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:15px 0;
-  border-top:1px solid var(--linha)}
-.item:first-of-type{border-top:0;padding-top:0}
-.item .ano{color:var(--mute);font-size:13px;font-variant-numeric:tabular-nums;padding-top:1px}
-.item .oq strong{display:block;font-size:14.5px;font-weight:600}
-.item .oq span{color:var(--mute);font-size:13.3px}
+/* ============ seções ============ */
+section{padding:92px 0;position:relative}
+.cab{display:flex;align-items:baseline;gap:16px;margin-bottom:14px}
+.cab .n{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--aco);opacity:.75}
+.cab h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700;letter-spacing:-.03em}
+.cab-sub{color:var(--mute);margin-bottom:40px;max-width:560px;font-size:15px;font-weight:300}
 
-/* ---------- stack ---------- */
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
-.chip{font-size:12.5px;padding:5px 12px;border-radius:999px;
-  background:var(--vidro);border:1px solid var(--borda);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+/* ============ projetos ============ */
+.proj{padding:34px;margin-bottom:20px;transition:transform .45s cubic-bezier(.2,.8,.3,1)}
+.proj:hover{transform:translateY(-4px)}
+.proj-cab{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.proj h3{font-size:1.4rem;font-weight:700;letter-spacing:-.025em}
+.proj .ano{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mute);opacity:.7}
+.proj .papel{color:var(--mute);font-size:13.8px;margin-bottom:18px}
+.proj p{color:var(--mute2);font-size:15px;font-weight:300;margin-bottom:20px}
+.proj p b{color:#fff;font-weight:600}
+.marco{display:flex;gap:28px;flex-wrap:wrap;padding:18px 0;margin-bottom:20px;
+  border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.marco div{display:flex;flex-direction:column;gap:1px}
+.marco .v{font-size:1.45rem;font-weight:700;letter-spacing:-.03em;
+  font-family:'JetBrains Mono',monospace}
+.marco .r{font-size:11.4px;color:var(--mute);letter-spacing:.03em}
+.pilhas{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px}
+.pilha{font-family:'JetBrains Mono',monospace;font-size:11.2px;padding:5px 11px;
+  border-radius:7px;background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.08);color:var(--mute2)}
+.ler{display:inline-flex;align-items:center;gap:8px;color:var(--tinta);text-decoration:none;
+  font-size:13.8px;font-weight:600;transition:gap .25s}
+.ler:hover{gap:13px}
+.ler span{color:var(--aco)}
 
-/* ---------- pastas ---------- */
-.pastas{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.pasta{position:relative;display:block;text-decoration:none;color:inherit;
-  aspect-ratio:1.32;perspective:900px}
-.pasta .corpo{position:absolute;inset:0;transform-style:preserve-3d}
-
-/* aba de tras */
-.pasta .aba{position:absolute;left:0;top:7%;width:46%;height:16%;
-  background:linear-gradient(170deg,#b9b7b2,#a8a6a1);
-  border-radius:7px 10px 0 0;
-  box-shadow:0 -1px 0 rgba(255,255,255,.4) inset}
-.pasta .tras{position:absolute;left:0;top:18%;right:0;bottom:0;
-  background:linear-gradient(170deg,#b9b7b2,#a4a29d);border-radius:4px 9px 9px 9px}
-
-/* papeis que espiam */
-.pasta .papeis{position:absolute;left:7%;right:7%;top:21%;bottom:17%;
-  display:flex;align-items:flex-end;justify-content:center}
-.pasta .papeis i{position:absolute;left:0;right:0;top:0;bottom:0;
-  background:#fdfdfc;border-radius:3px;
-  box-shadow:0 2px 7px rgba(0,0,0,.1);
-  transition:transform .42s cubic-bezier(.2,.8,.3,1);
+/* ============ pastas ============ */
+.pastas{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:18px}
+.pasta{display:block;text-decoration:none;color:inherit}
+/* a moldura recorta: nenhum papel escapa, mesmo durante a animação */
+.moldura{position:relative;aspect-ratio:1.3;border-radius:16px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 1px 0 rgba(255,255,255,.12) inset,0 18px 44px rgba(0,0,0,.5);
+  transition:transform .45s cubic-bezier(.2,.8,.3,1),border-color .45s}
+.pasta:hover .moldura{transform:translateY(-6px);border-color:rgba(255,255,255,.2)}
+.pasta:focus-visible .moldura{outline:2px solid var(--aco);outline-offset:4px}
+/* aba */
+.ab{position:absolute;left:11%;top:14%;width:34%;height:9%;border-radius:5px 7px 0 0;
+  background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.1))}
+/* papeis: ancorados embaixo, so sobem um pouco. nunca saem da moldura */
+.pp{position:absolute;left:14%;right:14%;bottom:30%;height:40%;border-radius:4px;
+  background:linear-gradient(170deg,rgba(255,255,255,.92),rgba(224,230,240,.72));
+  transition:transform .45s cubic-bezier(.2,.8,.3,1);
   display:flex;align-items:center;justify-content:center;
-  font-size:12.5px;font-weight:600;color:#8c9099;letter-spacing:-.01em;
-  text-align:center;padding:0 10px;overflow:hidden}
-.pasta .papeis i:nth-child(1){transform:translateY(-3%) rotate(-2.2deg);background:#f3f3f1}
-.pasta .papeis i:nth-child(2){transform:translateY(-1%) rotate(1.4deg);background:#f8f8f6}
-.pasta .papeis i:nth-child(3){transform:translateY(1%)}
+  font-family:'JetBrains Mono',monospace;font-size:10.6px;color:#2a3040;
+  text-align:center;padding:0 8px;overflow:hidden}
+.pp1{transform:translateY(0) rotate(-2.6deg);opacity:.5}
+.pp2{transform:translateY(0) rotate(1.8deg);opacity:.72}
+.pp3{transform:translateY(0)}
+.pasta:hover .pp1{transform:translateY(-26%) rotate(-6.5deg);opacity:.78}
+.pasta:hover .pp2{transform:translateY(-16%) rotate(4deg);opacity:.9}
+.pasta:hover .pp3{transform:translateY(-7%)}
+/* frente */
+.fr{position:absolute;left:0;right:0;bottom:0;height:62%;border-radius:0 0 15px 15px;
+  background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.05) 55%,rgba(255,255,255,.03));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(255,255,255,.26) inset;
+  border-top:1px solid rgba(255,255,255,.17)}
+.pasta .rot{position:absolute;left:9%;bottom:11%;z-index:5;font-size:13.4px;font-weight:600;
+  letter-spacing:-.01em}
+.pasta .seta{position:absolute;right:9%;bottom:12%;z-index:5;color:var(--mute);
+  font-size:13px;transition:.3s}
+.pasta:hover .seta{color:#fff;transform:translate(2px,-2px)}
 
-/* frente da pasta */
-.pasta .frente{position:absolute;left:0;right:0;top:30%;bottom:0;
-  background:linear-gradient(168deg,#cbc9c4,#aeaca7 62%,#a09e99);
-  border-radius:5px 5px 10px 10px;
-  box-shadow:0 -1px 0 rgba(255,255,255,.55) inset, 0 10px 26px rgba(32,34,40,.16);
-  transition:transform .42s cubic-bezier(.2,.8,.3,1)}
-.pasta .rotulo{position:absolute;left:10%;bottom:9%;z-index:4;
-  font-size:14px;font-weight:600;letter-spacing:-.01em;color:#3b3d44}
+/* ============ tecnologias / trajetória ============ */
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.caixa{padding:30px}
+.caixa h4{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);
+  margin-bottom:20px;font-weight:600}
+.fichas{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
+.ficha{font-family:'JetBrains Mono',monospace;font-size:11.6px;padding:6px 12px;border-radius:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  transition:.25s;color:var(--mute2)}
+.ficha:hover{background:rgba(255,255,255,.1);color:#fff;transform:translateY(-2px)}
+.tl{display:grid;grid-template-columns:86px 1fr;gap:16px;padding:14px 0;
+  border-top:1px solid rgba(255,255,255,.07)}
+.tl:first-of-type{border-top:0;padding-top:0}
+.tl .q{font-family:'JetBrains Mono',monospace;font-size:11.4px;color:var(--aco);
+  opacity:.8;padding-top:3px}
+.tl .o strong{display:block;font-size:14.6px;font-weight:600}
+.tl .o span{color:var(--mute);font-size:13.2px}
+.nota{color:var(--mute);font-size:13.6px;font-weight:300}
 
-/* abrir ao passar o mouse */
-.pasta:hover .papeis i:nth-child(1){transform:translateY(-34%) rotate(-7deg)}
-.pasta:hover .papeis i:nth-child(2){transform:translateY(-25%) rotate(4.5deg)}
-.pasta:hover .papeis i:nth-child(3){transform:translateY(-17%)}
-.pasta:hover .frente{transform:rotateX(-11deg);transform-origin:bottom}
-.pasta:focus-visible{outline:2px solid var(--tinta);outline-offset:6px;border-radius:10px}
+/* ============ transparência ============ */
+.transp{padding:32px;border-left:2px solid var(--quente)}
+.transp h4{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--quente);
+  margin-bottom:16px;font-weight:600}
+.transp p{color:var(--mute2);font-size:14.4px;font-weight:300;margin-bottom:12px}
+.transp p:last-child{margin:0}
+.transp b{color:#fff;font-weight:600}
 
-@media(max-width:560px){
-  .pastas{gap:16px}
-  .pasta .rotulo{font-size:13px}
-  .pasta .papeis i{font-size:11px}
-}
+/* ============ contato ============ */
+.fim{padding:60px 40px;text-align:center}
+.fim h2{font-size:clamp(1.8rem,4.6vw,2.9rem);font-weight:800;letter-spacing:-.035em;margin-bottom:14px}
+.fim p{color:var(--mute);margin-bottom:32px;font-weight:300}
+footer{padding:40px 0 120px;text-align:center;color:var(--mute);font-size:12.6px;
+  font-family:'JetBrains Mono',monospace}
 
-/* ---------- contato ---------- */
-.contato a{color:var(--tinta);text-decoration:none;border-bottom:1px solid var(--linha);
-  padding-bottom:2px;transition:.2s}
-.contato a:hover{border-color:var(--tinta)}
+/* ============ barra de progresso ============ */
+.prog{position:fixed;top:0;left:0;height:1.5px;z-index:90;width:0;
+  background:linear-gradient(90deg,var(--aco),#fff);box-shadow:0 0 12px rgba(143,180,255,.6)}
 
-/* ---------- rodape com esferas ---------- */
-.rodape{position:relative;height:290px;overflow:hidden;margin-top:30px}
-.assinatura{position:absolute;bottom:92px;left:0;right:0;text-align:center;
-  color:var(--mute);font-size:12.5px;z-index:2}
-
-/* ---------- revelar ---------- */
-.rev{opacity:0;transform:translateY(16px);transition:.75s cubic-bezier(.2,.7,.3,1)}
+/* ============ revelar ============ */
+.rev{opacity:0;transform:translateY(26px);transition:.85s cubic-bezier(.16,.8,.3,1)}
 .rev.on{opacity:1;transform:none}
 
-/* ---------- efeitos de rolagem ---------- */
-/* o topo some e encolhe conforme voce desce */
-.topo-conteudo{will-change:transform,opacity}
-
-/* barra fina de progresso no alto */
-.progresso{position:fixed;top:0;left:0;height:2px;z-index:70;
-  background:linear-gradient(90deg,#8e9bb5,#15161a);width:0;
-  transition:width .08s linear}
-
-/* numero da secao cresce quando ela entra */
-.cab .n{transition:.5s cubic-bezier(.2,.7,.3,1)}
-.cab.on .n{color:var(--tinta)}
-
-/* cartao de vidro inclina de leve conforme passa pela tela */
-.cartao{will-change:transform}
-
-/* texto do projeto entra com leve deslocamento lateral */
-.proj.rev{transform:translateY(16px)}
-.proj.rev.on{transform:none}
-
-/* dica de rolagem no topo */
-.dica{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:7px;
-  color:var(--mute);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
-  z-index:3;transition:opacity .4s}
-.dica .traco{width:1px;height:30px;background:linear-gradient(var(--mute),transparent);
-  animation:desce 2.1s ease-in-out infinite}
-@keyframes desce{0%{transform:scaleY(.25);transform-origin:top}
-  55%{transform:scaleY(1);transform-origin:top}
-  56%{transform:scaleY(1);transform-origin:bottom}
-  100%{transform:scaleY(0);transform-origin:bottom}}
-
-@media(max-width:560px){
-  .item{grid-template-columns:76px 1fr;gap:12px}
-  header{padding:70px 0 120px}
-  .rodape{height:220px}
+@media(max-width:780px){
+  .duas{grid-template-columns:1fr}
+  .proj,.caixa,.transp{padding:24px}
+  .fim{padding:42px 24px}
+  section{padding:66px 0}
+  nav a{padding:9px 13px;font-size:12px}
+  .marco{gap:20px}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -217,290 +243,215 @@ a.ler:hover{border-color:var(--tinta)}
 </head>
 <body>
 
+<div class="ceu"></div><div class="malha"></div><div class="ruido"></div>
+<div class="prog" id="prog"></div>
+
 <nav>
-  <a href="#inicio" class="ativo" aria-label="Início"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></a>
-  <a href="#projetos" aria-label="Projetos"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></a>
-  <a href="#contato" aria-label="Contato"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.6 7.2"/></svg></a>
+  <a href="#inicio" class="ativo">Início</a>
+  <a href="#projetos">Projetos</a>
+  <a href="#stack">Stack</a>
+  <a href="#contato">Contato</a>
 </nav>
 
-<div class="progresso" id="progresso"></div>
-
 <header id="inicio">
-  <div class="campo" id="campo"></div>
-  <div class="col topo-conteudo" id="topoConteudo">
-    <h1 class="nome">Marcio Cezar</h1>
-    <p class="cargo">Automatizo processos de engenharia.<br>Plugins para Revit, sistemas internos<br>e correção de dados.</p>
-  </div>
-  <div class="dica" id="dica"><span>role</span><span class="traco"></span></div>
-</header>
-
-<section id="sobre">
   <div class="col">
-    <div class="cab rev"><span class="n">1</span><h2>Sobre</h2></div>
-    <div class="rev">
-      <p>Comecei em suporte técnico numa empresa de engenharia e arquitetura e acabei entregando as ferramentas que as equipes de projeto usavam todo dia.</p>
-      <p class="suave">Cursando Análise e Desenvolvimento de Sistemas na PUC Minas. Os três projetos abaixo foram construídos com apoio intensivo de IA — meu papel foi especificar, testar, decidir escopo e risco, e conduzir a implantação.</p>
+    <div class="etiqueta"><span class="pisca"></span> Disponível para oportunidades</div>
+    <h1>Marcio Cezar<em>engenharia, automatizada</em></h1>
+    <p class="lead">Comecei em suporte técnico e acabei entregando as ferramentas que a equipe usava todo dia. Plugins para Autodesk Revit, sistemas internos e correção de dados em produção.</p>
+    <div class="acoes">
+      <a href="#projetos" class="btn btn-claro">Ver os projetos</a>
+      <a href="https://github.com/Marcio282003" target="_blank" rel="noopener" class="btn btn-vidro">GitHub</a>
     </div>
   </div>
-</section>
+</header>
 
 <section id="projetos">
   <div class="col">
-    <div class="cab rev"><span class="n">2</span><h2>Projetos</h2></div>
+    <div class="cab rev"><span class="n">01</span><h2>Projetos</h2></div>
+    <p class="cab-sub rev">Três sistemas construídos na VIAVOZ LTDA, empresa de engenharia e arquitetura. Cada um tem um estudo de caso com as decisões, os bugs e os limites.</p>
 
-    <article class="proj rev">
-      <h3>Render BIM</h3>
+    <article class="proj lg rev">
+      <div class="proj-cab"><h3>Render BIM</h3><span class="ano">2026</span></div>
       <div class="papel">Plugin de renderização em tempo real para Autodesk Revit</div>
-      <p>Alternativa interna ao Enscape. O visualizador 3D roda <b>em processo separado</b> do Revit — um crash de GPU não derruba o trabalho do arquiteto, e o motor gráfico pode ser trocado sem mexer na integração.</p>
-      <div class="cartao"><b>21 versões</b> entregues · <b>147 testes</b> automatizados · validado dentro do Revit a cada ciclo</div>
-      <div class="tags"><span class="tag">C#</span><span class="tag">.NET 8</span><span class="tag">Direct3D 11</span><span class="tag">Revit API</span></div>
-      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-01-Render-BIM.md" target="_blank" rel="noopener">Ler o estudo de caso ↗</a>
+      <p>Alternativa interna ao Enscape. O visualizador 3D roda <b>em processo separado</b> do Revit — um crash de GPU não derruba o trabalho do arquiteto, e o motor gráfico pode ser trocado sem tocar na integração.</p>
+      <div class="marco">
+        <div><span class="v">21</span><span class="r">VERSÕES</span></div>
+        <div><span class="v">147</span><span class="r">TESTES</span></div>
+        <div><span class="v">1.5M</span><span class="r">TRIÂNGULOS</span></div>
+      </div>
+      <div class="pilhas"><span class="pilha">C#</span><span class="pilha">.NET 8</span><span class="pilha">Direct3D 11</span><span class="pilha">Revit API</span></div>
+      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-01-Render-BIM.md" target="_blank" rel="noopener">Ler o estudo de caso <span>→</span></a>
     </article>
 
-    <article class="proj rev">
-      <h3>Registro de Horas</h3>
+    <article class="proj lg rev">
+      <div class="proj-cab"><h3>Registro de Horas</h3><span class="ano">2026</span></div>
       <div class="papel">Diagnóstico e correção de um sistema em produção</div>
-      <p>Os totais de horas <b>mudavam sozinhos</b> entre dois carregamentos da página. A causa era paginação ordenada por uma coluna que se repete: cerca de 70 registros duplicavam e 70 sumiam a cada leitura, sem gerar erro nenhum.</p>
-      <div class="cartao">Conferido contra o banco, obra por obra: <b>11 de 11 corretas</b> contra 4 de 11. A correção eram 3 linhas — que decidi <b>não</b> aplicar, porque o sistema era de outra pessoa e estava em produção.</div>
-      <div class="tags"><span class="tag">JavaScript</span><span class="tag">PostgreSQL</span><span class="tag">Supabase</span><span class="tag">SQL</span></div>
-      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-02-Registro-de-Horas.md" target="_blank" rel="noopener">Ler o estudo de caso ↗</a>
+      <p>Os totais de horas <b>mudavam sozinhos</b> entre dois carregamentos da página. A causa era paginação ordenada por uma coluna que se repete: cerca de 70 registros duplicavam e 70 sumiam a cada leitura, sem gerar erro nenhum. A correção eram 3 linhas — que decidi <b>não</b> aplicar, porque o sistema era de outra pessoa e estava em produção.</p>
+      <div class="marco">
+        <div><span class="v">11/11</span><span class="r">CORRETAS NO PAINEL</span></div>
+        <div><span class="v">4/11</span><span class="r">NO SISTEMA ANTIGO</span></div>
+        <div><span class="v">3</span><span class="r">LINHAS DE CORREÇÃO</span></div>
+      </div>
+      <div class="pilhas"><span class="pilha">JavaScript</span><span class="pilha">PostgreSQL</span><span class="pilha">Supabase</span><span class="pilha">SQL</span></div>
+      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-02-Registro-de-Horas.md" target="_blank" rel="noopener">Ler o estudo de caso <span>→</span></a>
     </article>
 
-    <article class="proj rev">
-      <h3>MC-Blocks</h3>
+    <article class="proj lg rev">
+      <div class="proj-cab"><h3>MC-Blocks</h3><span class="ano">2026</span></div>
       <div class="papel">Biblioteca de famílias para Revit, substituindo ferramenta comercial</div>
       <p>A ferramenta paga que a equipe usava parou de funcionar e <b>sumia da aba</b> do Revit. O substituto lê a biblioteca da própria empresa e compila para três versões do Revit a partir do mesmo código-fonte.</p>
-      <div class="cartao"><b>32 mil famílias</b>, 13 GB, lidas direto do servidor · implantado na equipe de arquitetura e depois numa <b>empresa parceira</b></div>
-      <div class="tags"><span class="tag">C#</span><span class="tag">WPF</span><span class="tag">Revit API</span><span class="tag">PowerShell</span></div>
-      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-03-MC-Blocks.md" target="_blank" rel="noopener">Ler o estudo de caso ↗</a>
+      <div class="marco">
+        <div><span class="v">32k</span><span class="r">FAMÍLIAS</span></div>
+        <div><span class="v">13 GB</span><span class="r">EM SERVIDOR</span></div>
+        <div><span class="v">2</span><span class="r">EMPRESAS</span></div>
+      </div>
+      <div class="pilhas"><span class="pilha">C#</span><span class="pilha">WPF</span><span class="pilha">Revit API</span><span class="pilha">PowerShell</span></div>
+      <a class="ler" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-03-MC-Blocks.md" target="_blank" rel="noopener">Ler o estudo de caso <span>→</span></a>
     </article>
   </div>
 </section>
 
 <section id="stack">
   <div class="col">
-    <div class="cab rev"><span class="n">3</span><h2>Tecnologias</h2></div>
-    <div class="rev">
-      <div class="chips">
-        <span class="chip">C#</span><span class="chip">.NET 8</span><span class="chip">SQL</span>
-        <span class="chip">PostgreSQL</span><span class="chip">Supabase</span><span class="chip">JavaScript</span>
-        <span class="chip">PHP</span><span class="chip">WPF</span><span class="chip">Revit API</span>
-        <span class="chip">PowerShell</span><span class="chip">Git</span>
+    <div class="cab rev"><span class="n">02</span><h2>Stack e trajetória</h2></div>
+    <p class="cab-sub rev">O que uso e de onde vim.</p>
+    <div class="duas">
+      <div class="caixa lg rev">
+        <h4>Tecnologias</h4>
+        <div class="fichas">
+          <span class="ficha">C#</span><span class="ficha">.NET 8</span><span class="ficha">SQL</span>
+          <span class="ficha">PostgreSQL</span><span class="ficha">Supabase</span><span class="ficha">JavaScript</span>
+          <span class="ficha">PHP</span><span class="ficha">WPF</span><span class="ficha">Revit API</span>
+          <span class="ficha">PowerShell</span><span class="ficha">Git</span>
+        </div>
+        <p class="nota">Estou aprendendo os fundamentos de programação na faculdade agora. O que entreguei até aqui veio de entender bem o problema, testar com rigor e levar o projeto até o fim.</p>
       </div>
-      <p class="suave">Estou aprendendo os fundamentos de programação na faculdade agora. O que entreguei até aqui veio de entender bem o problema, testar com rigor e levar o projeto até o fim.</p>
+      <div class="caixa lg rev">
+        <h4>Trajetória</h4>
+        <div class="tl"><div class="q">2026 →</div><div class="o"><strong>Visual Systems</strong><span>Totens de autoatendimento</span></div></div>
+        <div class="tl"><div class="q">2025–26</div><div class="o"><strong>VIAVOZ LTDA</strong><span>Suporte técnico · automação de processos</span></div></div>
+        <div class="tl"><div class="q">Cursando</div><div class="o"><strong>Análise e Desenvolvimento de Sistemas</strong><span>PUC Minas</span></div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="historico">
+<section id="arquivos">
   <div class="col">
-    <div class="cab rev"><span class="n">4</span><h2>Trajetória</h2></div>
-    <div class="rev">
-      <div class="item"><div class="ano">2026 →</div><div class="oq"><strong>Visual Systems</strong><span>Totens de autoatendimento</span></div></div>
-      <div class="item"><div class="ano">2025 – 2026</div><div class="oq"><strong>VIAVOZ LTDA</strong><span>Suporte técnico · automação de processos de engenharia</span></div></div>
-      <div class="item"><div class="ano">Cursando</div><div class="oq"><strong>Análise e Desenvolvimento de Sistemas</strong><span>PUC Minas</span></div></div>
-    </div>
-  </div>
-</section>
-
-<section id="pastas">
-  <div class="col">
-    <div class="cab rev"><span class="n">5</span><h2>Em outros lugares</h2></div>
-    <p class="suave rev" style="margin-bottom:28px">Os estudos de caso completos e o resto do que eu mantenho na internet.</p>
+    <div class="cab rev"><span class="n">03</span><h2>Arquivos</h2></div>
+    <p class="cab-sub rev">Os estudos de caso completos, em detalhe.</p>
     <div class="pastas rev">
 
       <a class="pasta" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-01-Render-BIM.md" target="_blank" rel="noopener">
-        <span class="corpo">
-          <span class="aba"></span><span class="tras"></span>
-          <span class="papeis"><i>Direct3D 11</i><i>147 testes</i><i>21 versões</i></span>
-          <span class="frente"></span>
-          <span class="rotulo">Render BIM</span>
-        </span>
+        <div class="moldura">
+          <span class="ab"></span>
+          <span class="pp pp1">Direct3D 11</span><span class="pp pp2">147 testes</span><span class="pp pp3">21 versões</span>
+          <span class="fr"></span>
+          <span class="rot">Render BIM</span><span class="seta">↗</span>
+        </div>
       </a>
 
       <a class="pasta" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-02-Registro-de-Horas.md" target="_blank" rel="noopener">
-        <span class="corpo">
-          <span class="aba"></span><span class="tras"></span>
-          <span class="papeis"><i>PostgreSQL</i><i>bug silencioso</i><i>11 de 11</i></span>
-          <span class="frente"></span>
-          <span class="rotulo">Registro de Horas</span>
-        </span>
+        <div class="moldura">
+          <span class="ab"></span>
+          <span class="pp pp1">PostgreSQL</span><span class="pp pp2">bug silencioso</span><span class="pp pp3">11 de 11</span>
+          <span class="fr"></span>
+          <span class="rot">Registro de Horas</span><span class="seta">↗</span>
+        </div>
       </a>
 
       <a class="pasta" href="https://github.com/Marcio282003/portfolio/blob/main/CASO-03-MC-Blocks.md" target="_blank" rel="noopener">
-        <span class="corpo">
-          <span class="aba"></span><span class="tras"></span>
-          <span class="papeis"><i>3 versões do Revit</i><i>13 GB</i><i>32 mil famílias</i></span>
-          <span class="frente"></span>
-          <span class="rotulo">MC-Blocks</span>
-        </span>
+        <div class="moldura">
+          <span class="ab"></span>
+          <span class="pp pp1">3 versões Revit</span><span class="pp pp2">13 GB</span><span class="pp pp3">32 mil famílias</span>
+          <span class="fr"></span>
+          <span class="rot">MC-Blocks</span><span class="seta">↗</span>
+        </div>
       </a>
 
       <a class="pasta" href="https://github.com/Marcio282003" target="_blank" rel="noopener">
-        <span class="corpo">
-          <span class="aba"></span><span class="tras"></span>
-          <span class="papeis"><i>repositórios</i><i>commits</i><i>@Marcio282003</i></span>
-          <span class="frente"></span>
-          <span class="rotulo">GitHub</span>
-        </span>
+        <div class="moldura">
+          <span class="ab"></span>
+          <span class="pp pp1">repositórios</span><span class="pp pp2">commits</span><span class="pp pp3">@Marcio282003</span>
+          <span class="fr"></span>
+          <span class="rot">GitHub</span><span class="seta">↗</span>
+        </div>
       </a>
 
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <div class="transp lg rev">
+      <h4>Transparência</h4>
+      <p>Os três projetos foram construídos <b>com apoio intensivo de IA</b>. Prefiro que isso fique claro desde o início.</p>
+      <p><b>O que foi meu:</b> identificar o problema, escrever a especificação, testar cada versão e reportar os defeitos com precisão, decidir escopo e risco, e conduzir a implantação pelas equipes.</p>
+      <p><b>O que foi da IA:</b> escrever o código, propor a arquitetura e investigar as causas dos defeitos a partir dos meus relatos de teste.</p>
+      <p class="nota">O código-fonte pertence à empresa, então os estudos de caso descrevem decisões e resultados, sem reproduzir código proprietário.</p>
     </div>
   </div>
 </section>
 
 <section id="contato">
   <div class="col">
-    <div class="cab rev"><span class="n">6</span><h2>Contato</h2></div>
-    <div class="contato rev">
+    <div class="fim lg rev">
+      <h2>Vamos conversar</h2>
       <p>Aberto a oportunidades em desenvolvimento, automação e sistemas internos.</p>
-      <p>
-        <a href="mailto:marciogamercaldeira@gmail.com">marciogamercaldeira@gmail.com</a><br>
-        <a href="https://github.com/Marcio282003" target="_blank" rel="noopener">github.com/Marcio282003</a>
-      </p>
+      <div class="acoes" style="justify-content:center">
+        <a href="mailto:marciogamercaldeira@gmail.com" class="btn btn-claro">marciogamercaldeira@gmail.com</a>
+        <a href="https://github.com/Marcio282003" target="_blank" rel="noopener" class="btn btn-vidro">GitHub</a>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="rodape"><div class="campo" id="campo2"></div><div class="assinatura">Belo Horizonte, MG</div></div>
+<footer>BELO HORIZONTE · MG</footer>
 
 <script>
-// ---- esferas de vidro ----
-var PALETA = [
-  'linear-gradient(145deg,#cfd9e8,#97a7c2)',
-  'linear-gradient(145deg,#e6dcd0,#bfae99)',
-  'linear-gradient(145deg,#d2e3dc,#94b6aa)',
-  'linear-gradient(145deg,#3c4250,#1d2129)',
-  'linear-gradient(145deg,#e8d8dd,#c2a0ac)',
-  'linear-gradient(145deg,#dfe3e7,#aeb6c0)',
-  'linear-gradient(145deg,#d8d2e8,#a398c4)'
-];
-function semear(alvo, qtd, min, max, evitarMeio){
-  var frag = document.createDocumentFragment();
-  for(var i=0;i<qtd;i++){
-    var d = min + Math.random()*(max-min);
-    var x = Math.random()*100, y = Math.random()*100;
-    // deixa o centro livre para o nome não brigar com as esferas
-    if(evitarMeio && x>24 && x<76 && y>26 && y<74){ x = x<50 ? x-24 : x+24; }
-    var casca = document.createElement('div');
-    casca.className = 'casca';
-    casca.style.width = casca.style.height = d+'px';
-    casca.style.left = x+'%'; casca.style.top = y+'%';
-    casca.style.opacity = (.55+Math.random()*.4).toFixed(2);
-    casca.dataset.d = d;
+var parado = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-    var e = document.createElement('div');
-    e.className = 'esfera';
-    e.style.setProperty('--c', PALETA[(Math.random()*PALETA.length)|0]);
-    e.style.setProperty('--t', (12+Math.random()*12).toFixed(1)+'s');
-    e.style.setProperty('--d', (-Math.random()*12).toFixed(1)+'s');
-    e.style.setProperty('--sobe', (-10-Math.random()*22).toFixed(0)+'px');
-    e.style.setProperty('--lado', (Math.random()*16-8).toFixed(0)+'px');
-    e.style.setProperty('--gira', (Math.random()*10-5).toFixed(0)+'deg');
-    casca.appendChild(e);
-    frag.appendChild(casca);
-  }
-  alvo.appendChild(frag);
+// reflexo do cursor sobre cada peça de vidro
+if(!parado && window.matchMedia('(hover:hover)').matches){
+  document.querySelectorAll('.lg').forEach(function(el){
+    el.addEventListener('mousemove', function(ev){
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (ev.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (ev.clientY - r.top) + 'px');
+    }, {passive:true});
+  });
 }
-var estreito = window.matchMedia('(max-width:560px)').matches;
-semear(document.getElementById('campo'),  estreito?9:16, estreito?34:48, estreito?62:104, true);
-semear(document.getElementById('campo2'), estreito?12:22, estreito?22:30, estreito?48:78, false);
 
-// ---- revelar ao rolar ----
+// revelar ao rolar
 var io = new IntersectionObserver(function(es){
   es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
-}, {threshold:.15, rootMargin:'0px 0px -30px 0px'});
-document.querySelectorAll('.rev').forEach(function(el){ io.observe(el); });
-document.querySelectorAll('.cab').forEach(function(el){ io.observe(el); });
+}, {threshold:.12, rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.rev').forEach(function(el,i){
+  el.style.transitionDelay = (i % 3) * 80 + 'ms';
+  io.observe(el);
+});
 
-// ---- efeitos ligados a rolagem e ao mouse ----
-var parado = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-if(!parado){
-  var esferasTopo = [].slice.call(document.querySelectorAll('#campo .casca'));
-  var esferasPe   = [].slice.call(document.querySelectorAll('#campo2 .casca'));
-  // cada esfera ganha uma "profundidade": as maiores se mexem menos, como no mundo real
-  function profundidade(lista){
-    lista.forEach(function(e){
-      var d = parseFloat(e.dataset.d);
-      e._p = 0.16 + (1 - Math.min(d,110)/110) * 0.5;   // pequena = mais rapida
-    });
-  }
-  profundidade(esferasTopo); profundidade(esferasPe);
-
-  var topo = document.getElementById('topoConteudo'),
-      dica = document.getElementById('dica'),
-      barra = document.getElementById('progresso'),
-      rodape = document.querySelector('.rodape'),
-      mx = 0, my = 0, alvoX = 0, alvoY = 0, pendente = false;
-
-  // o mouse empurra as esferas do topo de leve
-  window.addEventListener('mousemove', function(ev){
-    alvoX = (ev.clientX / window.innerWidth  - .5) * 2;
-    alvoY = (ev.clientY / window.innerHeight - .5) * 2;
-  }, {passive:true});
-
-  function quadro(){
-    pendente = false;
-    var y = window.scrollY, h = window.innerHeight;
-
-    // suaviza o movimento do mouse
-    mx += (alvoX - mx) * .06;
-    my += (alvoY - my) * .06;
-
-    // topo: encolhe, sobe e desaparece conforme voce desce
-    if(y < h){
-      var t = y / h;
-      topo.style.transform = 'translateY(' + (y * .34) + 'px) scale(' + (1 - t * .08) + ')';
-      topo.style.opacity = Math.max(0, 1 - t * 1.5);
-      if(dica) dica.style.opacity = Math.max(0, 1 - t * 4);
-    }
-
-    // esferas do topo: paralaxe por profundidade + empurrao do mouse
-    if(y < h * 1.2){
-      esferasTopo.forEach(function(e){
-        e.style.transform = 'translate3d(' + (mx * 26 * e._p) + 'px,' +
-                            (my * 20 * e._p - y * e._p * .55) + 'px,0)';
-      });
-    }
-
-    // esferas do rodape: sobem quando o rodape entra na tela
-    if(rodape){
-      var r = rodape.getBoundingClientRect();
-      if(r.top < h && r.bottom > 0){
-        var p = 1 - (r.top / h);
-        esferasPe.forEach(function(e){
-          e.style.transform = 'translate3d(0,' + (-p * 60 * e._p) + 'px,0)';
-        });
-      }
-    }
-
-    // barra de progresso
-    var total = document.documentElement.scrollHeight - h;
-    barra.style.width = (total > 0 ? (y / total) * 100 : 0) + '%';
-  }
-
-  function pedir(){ if(!pendente){ pendente = true; requestAnimationFrame(quadro); } }
-  window.addEventListener('scroll', pedir, {passive:true});
-  window.addEventListener('mousemove', pedir, {passive:true});
-  window.addEventListener('resize', pedir, {passive:true});
-  // mantem a animacao do mouse viva mesmo parado
-  setInterval(pedir, 1000/30);
-  quadro();
-}
-
-// ---- menu acompanha a seção ----
-var mapa = {inicio:'inicio', sobre:'inicio', projetos:'projetos', stack:'projetos',
-            historico:'projetos', pastas:'projetos', contato:'contato'};
-var ids = Object.keys(mapa);
+// barra de progresso + menu que acompanha
+var prog = document.getElementById('prog');
+var mapa = {inicio:'inicio', projetos:'projetos', stack:'stack',
+            arquivos:'stack', contato:'contato'};
 var links = {};
 document.querySelectorAll('nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)] = a; });
-function marcar(){
-  var y = window.scrollY + window.innerHeight*0.4, atual = 'inicio';
-  ids.forEach(function(id){ var s = document.getElementById(id); if(s && s.offsetTop <= y) atual = mapa[id]; });
+var pendente = false;
+function quadro(){
+  pendente = false;
+  var y = window.scrollY, h = window.innerHeight;
+  var total = document.documentElement.scrollHeight - h;
+  prog.style.width = (total > 0 ? (y/total)*100 : 0) + '%';
+  var alvo = y + h*0.4, atual = 'inicio';
+  for(var id in mapa){ var s = document.getElementById(id); if(s && s.offsetTop <= alvo) atual = mapa[id]; }
   for(var k in links) links[k].classList.toggle('ativo', k === atual);
 }
-window.addEventListener('scroll', marcar, {passive:true});
-marcar();
+function pedir(){ if(!pendente){ pendente = true; requestAnimationFrame(quadro); } }
+window.addEventListener('scroll', pedir, {passive:true});
+window.addEventListener('resize', pedir, {passive:true});
+quadro();
 </script>
 </body>
 </html>
