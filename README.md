@@ -4,6 +4,8 @@ Estudos de caso de projetos que desenvolvi na **VIAVOZ LTDA**, empresa de engenh
 
 Cada documento descreve o problema, as decisões técnicas, os bugs enfrentados e os limites conhecidos de cada projeto.
 
+### → **[Ver o portfólio no navegador](https://marcio282003.github.io/portfolio/)**
+
 ---
 
 | Projeto | O que é | Stack |
