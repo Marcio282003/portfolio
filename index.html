@@ -245,11 +245,26 @@ section{padding:92px 0;position:relative}
   box-shadow:0 0 0 1px rgba(255,255,255,.22) inset,0 0 44px rgba(111,143,216,.52),
              0 0 110px rgba(111,143,216,.22);
   animation:respira 4.4s ease-in-out infinite;z-index:3}
+/* aneis que expandem e somem — equivale ao animate-ping do original */
+.nucleo::before,.nucleo::after{content:"";position:absolute;inset:-10px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.28);animation:eco 2.8s cubic-bezier(0,0,.2,1) infinite}
+.nucleo::after{inset:-19px;border-color:rgba(255,255,255,.15);animation-delay:.65s}
+@keyframes eco{70%,100%{transform:scale(1.9);opacity:0}}
 .nucleo span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;
-  color:#0b1020;letter-spacing:.06em;line-height:1.25;text-shadow:0 1px 0 rgba(255,255,255,.35)}
+  color:#0b1020;letter-spacing:.06em;line-height:1.25;text-shadow:0 1px 0 rgba(255,255,255,.35);
+  position:relative;z-index:1}
 @keyframes respira{50%{box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,
   0 0 62px rgba(111,143,216,.68),0 0 150px rgba(111,143,216,.3)}}
-.no{position:absolute;left:50%;top:50%;width:0;height:0;z-index:4}
+/* o JS escreve --z e --op a cada quadro: profundidade de verdade */
+.no{position:absolute;left:50%;top:50%;width:0;height:0;
+  z-index:var(--z,4);opacity:var(--op,1);
+  transition:opacity .5s}
+/* halo do no, pulsa quando ele e "relacionado" ao aberto */
+.no .halo{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;
+  border-radius:50%;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(circle,rgba(255,255,255,.22),transparent 68%)}
+.no.liga .halo{opacity:1;animation:bate 1.5s ease-in-out infinite}
+.no.liga button{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.2);color:#fff}
 .no button{position:absolute;left:-26px;top:-26px;width:52px;height:52px;border-radius:50%;
   display:grid;place-items:center;cursor:pointer;color:var(--mute2);
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
@@ -266,14 +281,42 @@ section{padding:92px 0;position:relative}
 .no.on .rotulo{color:#fff}
 .no .q{position:absolute;left:50%;top:48px;transform:translateX(-50%);white-space:nowrap;
   font-family:'JetBrains Mono',monospace;font-size:9.6px;color:var(--mute);opacity:.75}
-/* cartao de detalhe */
-.detalhe{max-width:560px;margin:22px auto 0;padding:22px 24px;min-height:98px;
-  display:flex;flex-direction:column;justify-content:center}
-.detalhe .dq{font-family:'JetBrains Mono',monospace;font-size:10.6px;color:var(--aco);
-  letter-spacing:.08em;margin-bottom:7px}
-.detalhe h5{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:7px}
-.detalhe p{color:var(--mute2);font-size:14.2px;font-weight:300;margin:0}
-.detalhe .vazio{color:var(--mute);font-size:13.6px;font-weight:300;text-align:center}
+/* cartao preso ao no, como no original */
+.cartao-no{position:absolute;left:50%;top:70px;width:264px;margin-left:-132px;z-index:300;
+  padding:16px 17px;border-radius:15px;text-align:left;
+  background:rgba(8,9,13,.9);backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 20px 50px rgba(0,0,0,.72),0 0 26px rgba(255,255,255,.07);
+  opacity:0;transform:translateY(-6px);pointer-events:none;
+  transition:opacity .34s,transform .34s}
+.no.on .cartao-no{opacity:1;transform:none;pointer-events:auto}
+/* a linha fina que liga o cartao ao no */
+.cartao-no::before{content:"";position:absolute;top:-13px;left:50%;width:1px;height:13px;
+  background:rgba(255,255,255,.5)}
+.cn-topo{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.selo-st{font-size:9.4px;font-weight:700;letter-spacing:.09em;padding:3px 8px;border-radius:999px;
+  border:1px solid;text-transform:uppercase;white-space:nowrap}
+.st-feito{color:#07080c;background:#fff;border-color:#fff}
+.st-agora{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.65)}
+.st-prox{color:var(--mute2);background:transparent;border-color:rgba(255,255,255,.3)}
+.cn-data{font-family:'JetBrains Mono',monospace;font-size:9.6px;color:var(--mute)}
+.cartao-no h5{font-size:14px;font-weight:700;letter-spacing:-.015em;margin-bottom:7px}
+.cartao-no p{font-size:12.2px;line-height:1.6;color:var(--mute2);font-weight:300;margin:0}
+.cn-metrica{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cn-metrica .k{font-size:10px;color:var(--mute);letter-spacing:.05em;text-transform:uppercase}
+.cn-metrica .v{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#fff}
+.cn-liga{margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12)}
+.cn-liga h6{font-size:9.4px;letter-spacing:.11em;text-transform:uppercase;color:var(--mute);
+  margin-bottom:7px;font-weight:600}
+.cn-liga div{display:flex;flex-wrap:wrap;gap:5px}
+.cn-liga button{font:inherit;font-size:10.4px;padding:4px 9px;cursor:pointer;
+  background:transparent;color:var(--mute2);border:1px solid rgba(255,255,255,.22);
+  border-radius:6px;transition:.2s}
+.cn-liga button:hover{background:rgba(255,255,255,.12);color:#fff}
+.dica-orb{text-align:center;color:var(--mute);font-size:12.6px;font-weight:300;
+  margin-top:14px;transition:opacity .3s}
 
 /* ============ transparência ============ */
 .transp{padding:32px;border-left:2px solid var(--quente)}
@@ -424,9 +467,7 @@ footer{padding:40px 0 120px;text-align:center;color:var(--mute);font-size:12.6px
       <div class="anel a1"></div><div class="anel a2"></div>
       <div class="nucleo"><span>SUPORTE<br>→ DEV</span></div>
     </div>
-    <div class="detalhe lg rev" id="detalhe">
-      <p class="vazio">Clique num ponto da órbita para ver o que aconteceu ali.</p>
-    </div>
+    <p class="dica-orb rev" id="detalhe">Clique num ponto da órbita. Clique no fundo para fechar.</p>
   </div>
 </section>
 
@@ -527,55 +568,118 @@ document.querySelectorAll('.rev').forEach(function(el,i){
 });
 
 // ============ órbita do percurso ============
+// q=data · t=título · d=texto · s=status · m=[valor, rótulo] · liga=índices conectados
 var PERCURSO = [
-  {q:'2025', t:'Suporte técnico', d:'Entrei na VIAVOZ atendendo chamados. Foi ali que vi de perto onde as equipes de projeto perdiam tempo todo dia.',
+  {q:'2025', t:'Suporte técnico', s:'feito', liga:[1],
+   d:'Entrei na VIAVOZ atendendo chamados. Foi ali que vi de perto onde as equipes de projeto perdiam tempo todo dia.',
+   m:['1a7m','tempo na função'],
    i:'<circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6"/>'},
-  {q:'2025', t:'Primeiro plugin', d:'A ferramenta paga da equipe parou de funcionar. Em vez de abrir chamado com o fornecedor, especifiquei um substituto nosso.',
+  {q:'2025', t:'Primeiro plugin', s:'feito', liga:[0,2],
+   d:'A ferramenta paga da equipe parou de funcionar. Em vez de abrir chamado com o fornecedor, especifiquei um substituto nosso.',
    i:'<path d="M4 6h16v12H4z"/><path d="M4 10h16"/><circle cx="7" cy="8" r=".6"/>'},
-  {q:'2026', t:'MC-Blocks', d:'32 mil famílias lidas direto do servidor, compilando para três versões do Revit. Implantado na arquitetura e depois numa empresa parceira.',
+  {q:'2026', t:'MC-Blocks', s:'feito', liga:[1,3],
+   d:'32 mil famílias lidas direto do servidor, compilando para três versões do Revit. Implantado na arquitetura e depois numa empresa parceira.',
+   m:['32 mil','famílias catalogadas'],
    i:'<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>'},
-  {q:'2026', t:'Render BIM', d:'Visualizador 3D rodando em processo separado do Revit. 21 versões, 147 testes, validado dentro do Revit a cada ciclo.',
+  {q:'2026', t:'Render BIM', s:'feito', liga:[2,4],
+   d:'Visualizador 3D rodando em processo separado do Revit, para que um crash de GPU não derrube o trabalho do arquiteto.',
+   m:['21 / 147','versões / testes'],
    i:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.4v3.2M12 18.4v3.2M2.4 12h3.2M18.4 12h3.2"/>'},
-  {q:'2026', t:'Registro de Horas', d:'Achei um bug silencioso num sistema em produção: os totais mudavam sozinhos. Documentei a correção de 3 linhas e decidi não aplicá-la.',
+  {q:'2026', t:'Registro de Horas', s:'feito', liga:[3,5],
+   d:'Achei um bug silencioso num sistema em produção: os totais mudavam sozinhos. Documentei a correção de 3 linhas e decidi não aplicá-la.',
+   m:['11 / 11','obras corretas'],
    i:'<circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.2 2"/>'},
-  {q:'2026 →', t:'Visual Systems', d:'Próximo passo: totens de autoatendimento, numa empresa de tecnologia. Cursando ADS na PUC Minas em paralelo.',
+  {q:'2026 →', t:'Visual Systems', s:'prox', liga:[4],
+   d:'Próximo passo: totens de autoatendimento, numa empresa de tecnologia. Cursando ADS na PUC Minas em paralelo.',
    i:'<path d="M5 3.6h14v12H5z"/><path d="M9.5 20.4h5M12 15.6v4.8"/>'}
 ];
 (function(){
   var orb = document.getElementById('orbita'), det = document.getElementById('detalhe');
   if(!orb) return;
+  var ST = {feito:['CONCLUÍDO','st-feito'], agora:['EM ANDAMENTO','st-agora'], prox:['PRÓXIMO','st-prox']};
+
   var nos = PERCURSO.map(function(p,k){
     var n = document.createElement('div'); n.className = 'no';
-    n.innerHTML = '<button type="button" aria-label="'+p.t+'">' +
-      '<svg viewBox="0 0 24 24">'+p.i+'</svg></button>' +
-      '<span class="rotulo">'+p.t+'</span><span class="q">'+p.q+'</span>';
-    n.querySelector('button').addEventListener('click', function(){ abrir(k); });
+    var liga = (p.liga||[]).map(function(j){
+      return '<button type="button" data-ir="'+j+'">'+PERCURSO[j].t+' →</button>';
+    }).join('');
+    n.innerHTML =
+      '<span class="halo"></span>' +
+      '<button class="bolha" type="button" aria-label="'+p.t+'"><svg viewBox="0 0 24 24">'+p.i+'</svg></button>' +
+      '<span class="rotulo">'+p.t+'</span><span class="q">'+p.q+'</span>' +
+      '<div class="cartao-no">' +
+        '<div class="cn-topo"><span class="selo-st '+ST[p.s][1]+'">'+ST[p.s][0]+'</span>' +
+        '<span class="cn-data">'+p.q+'</span></div>' +
+        '<h5>'+p.t+'</h5><p>'+p.d+'</p>' +
+        (p.m ? '<div class="cn-metrica"><span class="k">'+p.m[1]+'</span><span class="v">'+p.m[0]+'</span></div>' : '') +
+        (liga ? '<div class="cn-liga"><h6>Conectado a</h6><div>'+liga+'</div></div>' : '') +
+      '</div>';
+    n.querySelector('.bolha').addEventListener('click', function(ev){
+      ev.stopPropagation(); alternar(k);
+    });
+    n.querySelectorAll('[data-ir]').forEach(function(b){
+      b.addEventListener('click', function(ev){ ev.stopPropagation(); abrir(+b.dataset.ir); });
+    });
     orb.appendChild(n); return n;
   });
+
+  var giro = 0, alvoGiro = null, aberto = null, sobre = false, visivel = false;
+
   function abrir(k){
-    nos.forEach(function(n,j){ n.classList.toggle('on', j===k); });
-    var p = PERCURSO[k];
-    det.innerHTML = '<div class="dq">'+p.q+'</div><h5>'+p.t+'</h5><p>'+p.d+'</p>';
+    aberto = k;
+    var ligados = PERCURSO[k].liga || [];
+    nos.forEach(function(n,j){
+      n.classList.toggle('on', j===k);
+      n.classList.toggle('liga', ligados.indexOf(j) >= 0);
+    });
+    if(det) det.style.opacity = '0';
+    // gira a orbita ate o no escolhido parar embaixo do nucleo
+    alvoGiro = (Math.PI/2) - (k / nos.length) * Math.PI*2;
   }
-  var giro = 0, pausado = false;
-  orb.addEventListener('mouseenter', function(){ pausado = true; });
-  orb.addEventListener('mouseleave', function(){ pausado = false; });
+  function fechar(){
+    aberto = null; alvoGiro = null;
+    nos.forEach(function(n){ n.classList.remove('on','liga'); });
+    if(det) det.style.opacity = '1';
+  }
+  function alternar(k){ if(aberto === k) fechar(); else abrir(k); }
+  orb.addEventListener('click', function(ev){ if(ev.target === orb) fechar(); });
+
+  orb.addEventListener('mouseenter', function(){ sobre = true; });
+  orb.addEventListener('mouseleave', function(){ sobre = false; });
+
   function posicionar(){
     var r = Math.min(orb.clientWidth, orb.clientHeight) * 0.37;
-    orb.querySelector('.a1').style.width = orb.querySelector('.a1').style.height = (r*2)+'px';
-    var a2 = orb.querySelector('.a2');
+    var a1 = orb.querySelector('.a1'), a2 = orb.querySelector('.a2');
+    a1.style.width = a1.style.height = (r*2)+'px';
     a2.style.width = a2.style.height = (r*2*0.56)+'px';
     nos.forEach(function(n,k){
       var ang = (k / nos.length) * Math.PI*2 + giro - Math.PI/2;
-      n.style.transform = 'translate(' + (Math.cos(ang)*r).toFixed(1) + 'px,' +
-                                         (Math.sin(ang)*r).toFixed(1) + 'px)';
+      var cx = Math.cos(ang), sy = Math.sin(ang);
+      n.style.transform = 'translate(' + (cx*r).toFixed(1) + 'px,' + (sy*r).toFixed(1) + 'px)';
+      // profundidade: quem esta na frente cobre e aparece mais
+      n.style.setProperty('--z', Math.round(100 + 50*cx));
+      n.style.setProperty('--op', (n.classList.contains('on') ? 1 :
+        Math.max(.42, Math.min(1, .42 + .58*((1+sy)/2)))).toFixed(2));
+      // mantem o cartao dentro da area visivel
+      var c = n.querySelector('.cartao-no');
+      if(c) c.style.marginLeft = (-132 - Math.max(-96, Math.min(96, cx*r*0.55))) + 'px';
     });
   }
-  var visivel = false;
+
   new IntersectionObserver(function(es){ visivel = es[0].isIntersecting; },
     {threshold:.05}).observe(orb);
+
   function animar(){
-    if(visivel && !pausado && !parado) giro += 0.0013;
+    if(!parado){
+      if(alvoGiro !== null){
+        var d = alvoGiro - giro;                      // caminho mais curto
+        d = Math.atan2(Math.sin(d), Math.cos(d));
+        giro += d * 0.085;
+        if(Math.abs(d) < 0.002) alvoGiro = null;
+      } else if(visivel && !sobre && aberto === null){
+        giro += 0.0016;
+      }
+    }
     posicionar();
     requestAnimationFrame(animar);
   }
