@@ -28,7 +28,10 @@ body{
 .col{max-width:560px;margin:0 auto;padding:0 24px}
 
 /* ---------- esferas de vidro ---------- */
-.esfera{position:absolute;border-radius:50%;pointer-events:none;
+/* a casca recebe a paralaxe do JS; a esfera dentro dela flutua sozinha pelo CSS.
+   Separar as duas evita que um transform apague o outro. */
+.casca{position:absolute;pointer-events:none;will-change:transform}
+.esfera{border-radius:50%;pointer-events:none;width:100%;height:100%;
   background:
     radial-gradient(circle at 30% 24%, rgba(255,255,255,.95), rgba(255,255,255,.25) 36%, transparent 58%),
     radial-gradient(circle at 70% 78%, rgba(255,255,255,.5), transparent 52%),
@@ -119,6 +122,38 @@ a.ler:hover{border-color:var(--tinta)}
 .rev{opacity:0;transform:translateY(16px);transition:.75s cubic-bezier(.2,.7,.3,1)}
 .rev.on{opacity:1;transform:none}
 
+/* ---------- efeitos de rolagem ---------- */
+/* o topo some e encolhe conforme voce desce */
+.topo-conteudo{will-change:transform,opacity}
+
+/* barra fina de progresso no alto */
+.progresso{position:fixed;top:0;left:0;height:2px;z-index:70;
+  background:linear-gradient(90deg,#8e9bb5,#15161a);width:0;
+  transition:width .08s linear}
+
+/* numero da secao cresce quando ela entra */
+.cab .n{transition:.5s cubic-bezier(.2,.7,.3,1)}
+.cab.on .n{color:var(--tinta)}
+
+/* cartao de vidro inclina de leve conforme passa pela tela */
+.cartao{will-change:transform}
+
+/* texto do projeto entra com leve deslocamento lateral */
+.proj.rev{transform:translateY(16px)}
+.proj.rev.on{transform:none}
+
+/* dica de rolagem no topo */
+.dica{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  color:var(--mute);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  z-index:3;transition:opacity .4s}
+.dica .traco{width:1px;height:30px;background:linear-gradient(var(--mute),transparent);
+  animation:desce 2.1s ease-in-out infinite}
+@keyframes desce{0%{transform:scaleY(.25);transform-origin:top}
+  55%{transform:scaleY(1);transform-origin:top}
+  56%{transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}}
+
 @media(max-width:560px){
   .item{grid-template-columns:76px 1fr;gap:12px}
   header{padding:70px 0 120px}
@@ -138,12 +173,15 @@ a.ler:hover{border-color:var(--tinta)}
   <a href="#contato" aria-label="Contato"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.6 7.2"/></svg></a>
 </nav>
 
+<div class="progresso" id="progresso"></div>
+
 <header id="inicio">
   <div class="campo" id="campo"></div>
-  <div class="col">
+  <div class="col topo-conteudo" id="topoConteudo">
     <h1 class="nome">Marcio Cezar</h1>
     <p class="cargo">Automatizo processos de engenharia.<br>Plugins para Revit, sistemas internos<br>e correção de dados.</p>
   </div>
+  <div class="dica" id="dica"><span>role</span><span class="traco"></span></div>
 </header>
 
 <section id="sobre">
@@ -248,18 +286,23 @@ function semear(alvo, qtd, min, max, evitarMeio){
     var x = Math.random()*100, y = Math.random()*100;
     // deixa o centro livre para o nome não brigar com as esferas
     if(evitarMeio && x>24 && x<76 && y>26 && y<74){ x = x<50 ? x-24 : x+24; }
+    var casca = document.createElement('div');
+    casca.className = 'casca';
+    casca.style.width = casca.style.height = d+'px';
+    casca.style.left = x+'%'; casca.style.top = y+'%';
+    casca.style.opacity = (.55+Math.random()*.4).toFixed(2);
+    casca.dataset.d = d;
+
     var e = document.createElement('div');
     e.className = 'esfera';
-    e.style.width = e.style.height = d+'px';
-    e.style.left = x+'%'; e.style.top = y+'%';
     e.style.setProperty('--c', PALETA[(Math.random()*PALETA.length)|0]);
     e.style.setProperty('--t', (12+Math.random()*12).toFixed(1)+'s');
     e.style.setProperty('--d', (-Math.random()*12).toFixed(1)+'s');
     e.style.setProperty('--sobe', (-10-Math.random()*22).toFixed(0)+'px');
     e.style.setProperty('--lado', (Math.random()*16-8).toFixed(0)+'px');
     e.style.setProperty('--gira', (Math.random()*10-5).toFixed(0)+'deg');
-    e.style.opacity = (.55+Math.random()*.4).toFixed(2);
-    frag.appendChild(e);
+    casca.appendChild(e);
+    frag.appendChild(casca);
   }
   alvo.appendChild(frag);
 }
@@ -272,6 +315,82 @@ var io = new IntersectionObserver(function(es){
   es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
 }, {threshold:.15, rootMargin:'0px 0px -30px 0px'});
 document.querySelectorAll('.rev').forEach(function(el){ io.observe(el); });
+document.querySelectorAll('.cab').forEach(function(el){ io.observe(el); });
+
+// ---- efeitos ligados a rolagem e ao mouse ----
+var parado = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+if(!parado){
+  var esferasTopo = [].slice.call(document.querySelectorAll('#campo .casca'));
+  var esferasPe   = [].slice.call(document.querySelectorAll('#campo2 .casca'));
+  // cada esfera ganha uma "profundidade": as maiores se mexem menos, como no mundo real
+  function profundidade(lista){
+    lista.forEach(function(e){
+      var d = parseFloat(e.dataset.d);
+      e._p = 0.16 + (1 - Math.min(d,110)/110) * 0.5;   // pequena = mais rapida
+    });
+  }
+  profundidade(esferasTopo); profundidade(esferasPe);
+
+  var topo = document.getElementById('topoConteudo'),
+      dica = document.getElementById('dica'),
+      barra = document.getElementById('progresso'),
+      rodape = document.querySelector('.rodape'),
+      mx = 0, my = 0, alvoX = 0, alvoY = 0, pendente = false;
+
+  // o mouse empurra as esferas do topo de leve
+  window.addEventListener('mousemove', function(ev){
+    alvoX = (ev.clientX / window.innerWidth  - .5) * 2;
+    alvoY = (ev.clientY / window.innerHeight - .5) * 2;
+  }, {passive:true});
+
+  function quadro(){
+    pendente = false;
+    var y = window.scrollY, h = window.innerHeight;
+
+    // suaviza o movimento do mouse
+    mx += (alvoX - mx) * .06;
+    my += (alvoY - my) * .06;
+
+    // topo: encolhe, sobe e desaparece conforme voce desce
+    if(y < h){
+      var t = y / h;
+      topo.style.transform = 'translateY(' + (y * .34) + 'px) scale(' + (1 - t * .08) + ')';
+      topo.style.opacity = Math.max(0, 1 - t * 1.5);
+      if(dica) dica.style.opacity = Math.max(0, 1 - t * 4);
+    }
+
+    // esferas do topo: paralaxe por profundidade + empurrao do mouse
+    if(y < h * 1.2){
+      esferasTopo.forEach(function(e){
+        e.style.transform = 'translate3d(' + (mx * 26 * e._p) + 'px,' +
+                            (my * 20 * e._p - y * e._p * .55) + 'px,0)';
+      });
+    }
+
+    // esferas do rodape: sobem quando o rodape entra na tela
+    if(rodape){
+      var r = rodape.getBoundingClientRect();
+      if(r.top < h && r.bottom > 0){
+        var p = 1 - (r.top / h);
+        esferasPe.forEach(function(e){
+          e.style.transform = 'translate3d(0,' + (-p * 60 * e._p) + 'px,0)';
+        });
+      }
+    }
+
+    // barra de progresso
+    var total = document.documentElement.scrollHeight - h;
+    barra.style.width = (total > 0 ? (y / total) * 100 : 0) + '%';
+  }
+
+  function pedir(){ if(!pendente){ pendente = true; requestAnimationFrame(quadro); } }
+  window.addEventListener('scroll', pedir, {passive:true});
+  window.addEventListener('mousemove', pedir, {passive:true});
+  window.addEventListener('resize', pedir, {passive:true});
+  // mantem a animacao do mouse viva mesmo parado
+  setInterval(pedir, 1000/30);
+  quadro();
+}
 
 // ---- menu acompanha a seção ----
 var mapa = {inicio:'inicio', sobre:'inicio', projetos:'projetos', stack:'projetos',
