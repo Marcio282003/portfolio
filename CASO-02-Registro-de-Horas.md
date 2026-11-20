@@ -19,7 +19,7 @@ Minha tarefa começou como *"montar um sistema de registro de horas"*. O diagnó
 
 ### O sintoma
 
-Medi o total de horas da mesma obra três vezes seguidas, sem ninguém lançar nada entre as medições:
+O total de horas da mesma obra foi medido três vezes seguidas, sem ninguém lançar nada entre as medições:
 
 ```
 4578:12   →   4612:42   →   4631:42
@@ -48,7 +48,7 @@ Ele contaminava a tela por obra, a por colaborador, o dashboard **e todos os Exc
 
 ### A verificação
 
-Conferi obra por obra contra o banco:
+A conferência foi feita obra por obra contra o banco:
 
 | | Obras corretas |
 |---|---|
@@ -86,7 +86,7 @@ O que fiz em vez disso:
 | 4 | Obra por lista, não texto livre | ~10 | médio | acaba com nome duplicado |
 | 5 | Campo `tipo_hora` no banco | migração | médio | produtividade confiável |
 
-3. **Escrevi a mensagem técnica** para o autor do sistema — explicando o problema, a evidência medida e a correção, sem acusação
+3. **Levei a mensagem técnica ao autor do sistema** — explicando o problema, a evidência medida e a correção, sem acusação
 4. **Recomendei explicitamente não fazer os itens 4 e 5 naquele momento**, por travarem o fluxo de trabalho da equipe
 
 ---
@@ -140,15 +140,15 @@ A tabela de custo não guarda apenas `valor_hora` por pessoa. Guarda `vigencia_i
 
 **Por quê:** sem vigência, uma promoção recalcularia o custo de todos os meses passados, e o histórico mudaria sozinho. Com vigência, março de 2025 continua calculado pelo salário de março de 2025.
 
-### Recusar a credencial de administrador
+### A credencial de administrador não foi usada
 
 Quando o acesso ao banco virou necessário, a oferta era a *service role key* do Supabase — que dá poder total sobre os dados.
 
-**Recusei e propus a alternativa:** rodar consultas somente-leitura no SQL Editor e me passar o resultado. Eu via o schema real sem que nenhuma credencial mudasse de mãos.
+**Ela não chegou a ser usada.** A alternativa adotada foi rodar consultas somente-leitura no SQL Editor e trabalhar sobre o resultado — o schema real ficava visível sem que nenhuma credencial mudasse de mãos.
 
 ### Deixar uma decisão em aberto, de propósito
 
-Uma função de leitura de custo ficou marcada como `SECURITY DEFINER`, o que a torna legível por qualquer usuário autenticado. Deixei a escolha documentada e **não decidida** no código, com a alternativa comentada ao lado.
+Uma função de leitura de custo ficou marcada como `SECURITY DEFINER`, o que a torna legível por qualquer usuário autenticado. A escolha ficou documentada e **não decidida** no código, com a alternativa comentada ao lado.
 
 **Motivo:** se salário é restrito a administradores naquela empresa é política de RH, não decisão de quem escreve o código.
 
@@ -191,7 +191,7 @@ Boa parte do valor deste trabalho não foi código.
 
 Precisei explicar a um gestor **por que dois números não podem ficar iguais** — porque o número do sistema legado não é estável, então não existe valor para copiar. E precisei dizer isso sem desqualificar o trabalho de outra pessoa.
 
-A analogia que usei, e que funcionou:
+A analogia usada, e que funcionou:
 
 > Imagine uma gaveta com 10.000 fichas. O navegador pede de 1.000 em 1.000.
 > Mas **primeiras em que ordem?** Se centenas de fichas têm a mesma data, o banco
@@ -217,6 +217,25 @@ Também preparei a saída prática para a apresentação: ligar o modo "igual ao
 
 ---
 
-> **Sobre o código:** projeto desenvolvido no contexto de vínculo empregatício. Este documento
-> descreve diagnóstico, decisões e resultados, sem reproduzir código proprietário. Nomes de
-> colegas e identificadores de projeto foram omitidos.
+## Como este projeto foi construído
+
+O código foi escrito **com apoio intensivo de IA**. Registro isso porque a divisão de
+trabalho explica o resultado, e porque prefiro que fique claro desde o início.
+
+**O que foi meu:** identificar o problema e propor o projeto; escrever a especificação
+inicial; testar cada versão e reportar os defeitos com precisão; decidir escopo, prioridade
+e o que podia ou não ser alterado; conduzir a instalação e o uso pelas equipes.
+
+**O que foi da IA:** escrever o código, propor a arquitetura e investigar as causas dos
+defeitos a partir dos meus relatos de teste.
+
+Não programo C# de forma fluente. Estou cursando Análise e Desenvolvimento de Sistemas na
+PUC Minas e aprendendo os fundamentos agora. O que este documento mostra é o que fui capaz
+de **especificar, testar, decidir e entregar** — não autoria de código.
+
+---
+
+> **Sobre o código:** projeto desenvolvido no contexto de vínculo empregatício na
+> VIAVOZ LTDA, e o código-fonte pertence à empresa. Este documento descreve decisões,
+> problemas e resultados, sem reproduzir código proprietário.
+> Nomes de colegas e identificadores de projeto foram omitidos.

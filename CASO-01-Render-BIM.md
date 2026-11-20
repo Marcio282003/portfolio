@@ -98,7 +98,7 @@ Durante a navegação, paredes e portas **piscavam** ao mover a câmera. Inaceit
 
 **Solução:** prioridade fixa de profundidade por material, com deslocamento de décimos de milímetro, invisível a olho nu. A primeira versão tinha 12 níveis e ainda deixava ~8% de disputas; subindo para **48 níveis**, caiu para ~2%.
 
-**O que eu faria diferente:** medir a taxa de disputa *antes* de escolher o número de níveis, em vez de depois.
+**O aprendizado:** a taxa de disputa deveria ter sido medida *antes* de escolher o número de níveis, não depois.
 
 ### 3. Seleção disputando com a topografia
 
@@ -118,7 +118,7 @@ Mudar a cor de uma parede mudava **todos** os elementos que usassem aquele mater
 
 A integração recomendada entre Revit e Unreal é o **Datasmith**, da Epic. Ele não funcionava no Revit 2025 — confirmado por relatos em fórum e pelo teste local.
 
-**Decisão:** em vez de esperar a Epic, escrevi um exportador glTF próprio, reaproveitando o contrato de cena que a arquitetura já fornecia. Virou o botão "Exportar para Unreal", entregue na versão 0.7.0.
+**Decisão:** em vez de esperar a Epic, o caminho foi escrever um exportador glTF próprio, reaproveitando o contrato de cena que a arquitetura já fornecia. Virou o botão "Exportar para Unreal", entregue na versão 0.7.0.
 
 ---
 
@@ -140,7 +140,7 @@ A integração recomendada entre Revit e Unreal é o **Datasmith**, da Epic. Ele
 
 Chegado o pedido de **qualidade fotorrealista e link navegável para o cliente**, ficou claro que o motor próprio não chegaria lá em tempo hábil.
 
-Levantei a alternativa a sério, em vez de defender o que já tinha construído:
+A alternativa foi avaliada a sério, em vez de defender o que já estava construído:
 
 | | Motor próprio | Unreal Engine |
 |---|---|---|
@@ -154,7 +154,7 @@ Levantei a alternativa a sério, em vez de defender o que já tinha construído:
 
 Isso também significou levantar o custo de hardware (RTX com 8–12 GB, 32 GB de RAM) e apresentar à empresa como decisão de investimento, não como detalhe técnico.
 
-**O ponto que importa:** a resposta honesta era que a ferramenta que eu construí não resolvia sozinha o problema completo. Dizer isso é mais útil para a empresa do que defender o próprio trabalho.
+**O ponto que importa:** a resposta honesta era que a ferramenta construída não resolvia sozinha o problema completo. Levar isso à empresa foi mais útil do que defender o próprio trabalho.
 
 ---
 
@@ -177,6 +177,24 @@ IPC por named pipe + memory-mapped file · glTF/GLB · PowerShell (build e empac
 
 ---
 
-> **Sobre o código:** este projeto foi desenvolvido no contexto de vínculo empregatício, e o
-> código-fonte pertence à empresa. Este documento descreve decisões de arquitetura,
-> problemas enfrentados e resultados — sem reproduzir código proprietário.
+## Como este projeto foi construído
+
+O código foi escrito **com apoio intensivo de IA**. Registro isso porque a divisão de
+trabalho explica o resultado, e porque prefiro que fique claro desde o início.
+
+**O que foi meu:** identificar o problema e propor o projeto; escrever a especificação
+inicial; testar cada versão e reportar os defeitos com precisão; decidir escopo, prioridade
+e o que podia ou não ser alterado; conduzir a instalação e o uso pelas equipes.
+
+**O que foi da IA:** escrever o código, propor a arquitetura e investigar as causas dos
+defeitos a partir dos meus relatos de teste.
+
+Não programo C# de forma fluente. Estou cursando Análise e Desenvolvimento de Sistemas na
+PUC Minas e aprendendo os fundamentos agora. O que este documento mostra é o que fui capaz
+de **especificar, testar, decidir e entregar** — não autoria de código.
+
+---
+
+> **Sobre o código:** projeto desenvolvido no contexto de vínculo empregatício na
+> VIAVOZ LTDA, e o código-fonte pertence à empresa. Este documento descreve decisões,
+> problemas e resultados, sem reproduzir código proprietário.
