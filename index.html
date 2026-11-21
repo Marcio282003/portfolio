@@ -100,17 +100,22 @@ nav a.ativo{color:#07080c;background:linear-gradient(140deg,#fff,#cfd7e6);
   transition:none}
 .painel::after{content:"";position:absolute;inset:0;border-radius:inherit;
   background:radial-gradient(120% 90% at 50% 0%,rgba(143,180,255,.18),transparent 62%)}
-.titulo{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;
-  gap:var(--gap,20px);flex-wrap:nowrap;pointer-events:none}
-.titulo span{font-size:clamp(2.1rem,8.4vw,6.4rem);font-weight:800;letter-spacing:-.05em;
-  line-height:.95;white-space:nowrap}
-.titulo .b{background:linear-gradient(104deg,#fff 14%,#9fb6e0 56%,#6b7b98 96%);
+/* nome e subtitulo num bloco so, centrado no painel */
+.centro{position:relative;z-index:3;text-align:center;padding:0 30px;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.4vh,26px)}
+.titulo{display:flex;align-items:baseline;justify-content:center;
+  gap:var(--gap,.28em);flex-wrap:nowrap;
+  /* o degrade atravessa o nome inteiro, nao so a segunda palavra */
+  background:linear-gradient(100deg,#fff 20%,#dfe7f6 44%,#93a9d2 74%,#6d7c9c 98%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.sob{position:absolute;bottom:17%;left:0;right:0;text-align:center;z-index:3;pointer-events:none}
-.sob .t{font-size:clamp(.95rem,1.9vw,1.15rem);color:var(--mute2);font-weight:300;
-  max-width:460px;margin:0 auto 10px;padding:0 24px}
-.role{font-family:'JetBrains Mono',monospace;font-size:10.6px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--mute)}
+.titulo span{font-size:clamp(1.9rem,6.6vw,5rem);font-weight:800;letter-spacing:-.045em;
+  line-height:1;white-space:nowrap}
+.sob{max-width:430px;pointer-events:none}
+.sob .t{font-size:clamp(.92rem,1.65vw,1.06rem);color:var(--mute2);font-weight:300;
+  line-height:1.6;margin:0}
+.role{position:absolute;bottom:7.5%;left:0;right:0;z-index:3;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:10.2px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--mute);pointer-events:none}
 .role i{display:block;width:1px;height:26px;margin:9px auto 0;
   background:linear-gradient(var(--mute),transparent);animation:corre 2.2s ease-in-out infinite}
 @keyframes corre{0%{transform:scaleY(.2);transform-origin:top}
@@ -374,11 +379,13 @@ footer{padding:40px 0 120px;text-align:center;color:var(--mute);font-size:12.6px
 <section class="palco" id="inicio">
   <div class="fixo">
     <div class="painel" id="painel"></div>
-    <h1 class="titulo" id="titulo"><span>MARCIO</span><span class="b">CEZAR</span></h1>
-    <div class="sob" id="sob">
-      <p class="t">Automatizo processos de engenharia. Plugins para Autodesk Revit, sistemas internos e correção de dados em produção.</p>
-      <div class="role" id="role">role para expandir<i></i></div>
+    <div class="centro">
+      <h1 class="titulo" id="titulo"><span>MARCIO</span><span>CEZAR</span></h1>
+      <div class="sob" id="sob">
+        <p class="t">Automatizo processos de engenharia. Plugins para Autodesk Revit, sistemas internos e correção de dados em produção.</p>
+      </div>
     </div>
+    <div class="role" id="role">role para expandir<i></i></div>
   </div>
 </section>
 
@@ -707,8 +714,10 @@ var PERCURSO = [
     painel.style.height = (46 + e * 54) + 'vh';
     painel.style.borderRadius = (26 - e * 26) + 'px';
     painel.style.opacity = (1 - e * 0.45).toFixed(3);
-    titulo.style.gap = (20 + e * Math.min(240, window.innerWidth * 0.22)) + 'px';
-    titulo.style.transform = 'scale(' + (1 + e * 0.1) + ')';
+    // o afastamento respeita a largura que o nome ja ocupa, para nao vazar
+    var sobra = Math.max(0, window.innerWidth - titulo.scrollWidth - 80);
+    titulo.style.gap = (14 + e * Math.min(260, sobra * 0.55)) + 'px';
+    titulo.style.transform = 'scale(' + (1 + e * 0.06) + ')';
     sob.style.opacity = Math.max(0, 1 - p * 2.1);
     if(role) role.style.opacity = Math.max(0, 1 - p * 3.4);
   }
